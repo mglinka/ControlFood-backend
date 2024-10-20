@@ -1,0 +1,87 @@
+package com.project.mpa.dto.converter;
+
+import com.project.dto.CreateAccountDTO;
+import com.project.mpa.dto.GetAllergenDTO;
+import com.project.mpa.dto.GetAllergenIntensityDTO;
+import com.project.mpa.dto.GetAllergyProfileDTO;
+import com.project.mpa.entity.allergy.Allergen;
+import com.project.mpa.entity.allergy.AllergyProfile;
+import com.project.mpa.entity.allergy.ProfileAllergen;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+@RequiredArgsConstructor
+public class AllergyProfileDTOConverter {
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public AllergyProfile toAllergyProfile (CreateAccountDTO createAccountDTO){
+        AllergyProfile allergyProfile = modelMapper.map(createAccountDTO, AllergyProfile.class);
+        return allergyProfile;
+    }
+
+    public GetAllergyProfileDTO toAllergyProfileDTO(AllergyProfile allergyProfile) {
+        GetAllergyProfileDTO getAllergyProfileDTO = modelMapper.map(allergyProfile, GetAllergyProfileDTO.class);
+
+        // Convert ProfileAllergens to GetAllergenIntensityDTO list
+        List<GetAllergenIntensityDTO> allergenIntensityDTOs = allergyProfile.getProfileAllergens().stream()
+                .map(this::convertProfileAllergenToGetAllergenIntensityDTO) // Updated method for intensity
+                .collect(Collectors.toList());
+
+        getAllergyProfileDTO.setAllergens(allergenIntensityDTOs);
+        return getAllergyProfileDTO;
+    }
+
+    /**
+     * Convert ProfileAllergen to GetAllergenIntensityDTO.
+     *
+     * @param profileAllergen the ProfileAllergen to convert
+     * @return converted GetAllergenIntensityDTO
+     */
+    private GetAllergenIntensityDTO convertProfileAllergenToGetAllergenIntensityDTO(ProfileAllergen profileAllergen) {
+        Allergen allergen = profileAllergen.getAllergen(); // Assume ProfileAllergen has a method to get Allergen
+        String intensity = profileAllergen.getIntensity(); // Assuming ProfileAllergen has a method to get intensity
+
+        return GetAllergenIntensityDTO.builder()
+                .allergen_id(allergen.getAllergen_id()) // Assuming Allergen has a method to get ID
+                .name(allergen.getName()) // Assuming Allergen has a method to get name
+                .intensity(intensity) // Map intensity from ProfileAllergen
+                .build();
+    }
+
+    public List<GetAllergyProfileDTO> allergyProfileDtoList(List<AllergyProfile> accounts) {
+        return accounts.stream().map(this::toAllergyProfileDTO).toList();
+    }
+//
+//
+//
+//    public Account toAccount(UpdateAccountDataDTO updateAccountDataDTO) {
+//        Account account = modelMapper.map(updateAccountDataDTO, Account.class);
+//        return account;
+//
+//
+//    }
+//
+//    public GetAccountPersonalDTO toAccountPersonalDTO (Account account){
+//        GetAccountPersonalDTO getAccountPersonalDTO = modelMapper.map(account, GetAccountPersonalDTO.class);
+//        return getAccountPersonalDTO;
+//    }
+//
+//    public GetAccountDTO toAccountDto(Account account) {
+//
+//        GetAccountDTO getAccountDTO = modelMapper.map(account, GetAccountDTO.class);
+//        return getAccountDTO;
+//    }
+//
+//
+
+
+
+}
