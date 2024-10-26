@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy JAR app to Azure Web App - ControlFoodApi
+name: Build and deploy WAR app to Azure Web App - ControlFoodApi
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          path: '${{ github.workspace }}/target/*.war'
 
   deploy:
     runs-on: windows-latest
@@ -49,9 +49,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_02F6013CDB334F9190E4E914BAD4B00B }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F3F9A2DB7C1C402DB1FFB97F1516A292 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9F7C1ED43DFF42A5B34D9C046DC243DC }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_44C87D3576B44E7B81F571F89254CDED }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_4FF5621821F74D2CABECC28BD3805B92 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A6E8F6EFEABB4936AF6E736E62FB1D42 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -59,5 +59,5 @@ jobs:
         with:
           app-name: 'ControlFoodApi'
           slot-name: 'Production'
-          package: '*.jar'
+          package: '*.war'
           
