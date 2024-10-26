@@ -73,3 +73,4 @@ jobs:
           slot-name: 'production'
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_98c13b6c8b5149e2b4ac59bb6784ffce }}
           images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
+
