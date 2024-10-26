@@ -1,5 +1,6 @@
 package com.project.mpa.entity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -15,6 +16,7 @@ import lombok.*;
 public class NutritionalValue extends AbstractEntity {
 
     @ManyToOne
+    @JoinColumn(name = "nutritionalvaluename_id")
     private NutritionalValueName nutritionalValueName;
 
     private Double quantity;

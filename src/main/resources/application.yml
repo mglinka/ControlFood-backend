@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://controlfood-db.postgres.database.azure.com:5432/postgres
     username: postgres
-    password: password
+    password: P@ssword123
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -14,6 +14,16 @@ spring:
     database: postgresql
 
 
+
+
+  flyway: #flyway automatically uses the datasource from the application to connect to the DBs
+    enabled: true # enables flyway database migration
+    locations: classpath:/migration # the location where flyway should look for migration scripts
+    validate-on-migrate: true
+    baseline-on-migrate: true
+    baseline-version: 0.0.0
+
+  #    default-schema: postgresql
 
 
 
@@ -30,4 +40,9 @@ spring:
 
 app:
   url: http://localhost:5173
+
+#
+#server:
+#  address: 192.168.0.101
+
 

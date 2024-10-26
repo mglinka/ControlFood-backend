@@ -126,8 +126,8 @@ public class AuthenticationService {
         var account = repository.findById(accountId).orElseThrow(() -> new AccountNotFoundException(ExceptionMessages.ACCOUNT_NOT_FOUND));
 
         account.setEnabled(true);
-        account.addRole(roleRepository.findByName(AccountRoleEnum.ROLE_USER)
-               .orElseThrow(() -> new RoleNotFoundException(ExceptionMessages.ROLE_NOT_FOUND)));
+        account.setRole(roleRepository.findByName(AccountRoleEnum.ROLE_USER)
+                .orElseThrow(() -> new RoleNotFoundException(ExceptionMessages.ROLE_NOT_FOUND)));
 
         repository.saveAndFlush(account);
 

@@ -49,4 +49,6 @@ public class GetProductDTO {
 
     @NotNull
     private UUID unitId;
+
+    private LabelDTO labelDTO;
 }

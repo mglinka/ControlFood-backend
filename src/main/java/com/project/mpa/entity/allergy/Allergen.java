@@ -22,6 +22,8 @@ public class Allergen {
     @Column(nullable = false, unique = true)
     private String name;  // Nazwa alergenu
 
+    @Version
+    private Long version;
 
     @OneToMany(mappedBy = "allergen", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ProfileAllergen> profileAllergens = new ArrayList<>();

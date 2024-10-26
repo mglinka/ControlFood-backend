@@ -12,13 +12,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
 
 @ToString
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Role extends AbstractEntity {
+public class Role extends AbstractEntity implements GrantedAuthority {
     @Column(nullable = false, unique = true, updatable = false, length = 32)
     //@NotBlank(message = ExceptionMessages.INCORRECT_ROLE_NAME)
     //@Size(max = 32, message = ExceptionMessages.INCORRECT_ROLE_NAME)
@@ -43,5 +44,10 @@ public class Role extends AbstractEntity {
             return name.hashCode();
         }
         return super.hashCode();
+    }
+
+    @Override
+    public String getAuthority() {
+        return name.toString();
     }
 }

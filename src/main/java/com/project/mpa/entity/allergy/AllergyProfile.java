@@ -29,7 +29,6 @@ public class AllergyProfile{
     private Long version;
 
     @OneToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
 

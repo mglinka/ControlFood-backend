@@ -23,6 +23,6 @@ public class Label extends AbstractEntity {
 
     private String allergens;
 
-    //private byte[] image;
+    private byte[] image;
 
 }

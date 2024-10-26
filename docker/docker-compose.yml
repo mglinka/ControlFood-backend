@@ -8,3 +8,4 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - ./postgresql/init_scripts/:/docker-entrypoint-initdb.d/
+      - ./postgres-data:/var/lib/postgresql/data

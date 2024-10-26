@@ -1,5 +1,6 @@
 package com.project.mpa.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -14,5 +15,6 @@ import lombok.*;
 @Table(name = "nutritional_value_group")
 public class NutritionalValueGroup extends AbstractEntity {
 
+    @Column(name = "groupname")
     private String groupName;
 }

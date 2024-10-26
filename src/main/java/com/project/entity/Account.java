@@ -25,16 +25,15 @@ public class Account implements UserDetails {
     private String firstName;
     private String lastName;
     private String password;
-    private String username;
 
     @Version
     @Column(nullable = false)
     @EqualsAndHashCode.Exclude
     private Long version;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @ToString.Exclude
-    private List<Role> roles = new ArrayList<>();
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")  // Ensure the referencedColumnName matches your Role entity's ID
+    private Role role;
     private boolean isEnabled = false;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -90,11 +89,10 @@ public class Account implements UserDetails {
         return UserDetails.super.isEnabled();
     }
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().toString()))
-                .toList();
+        return Set.of(role);
     }
 
     @Override
@@ -102,11 +100,5 @@ public class Account implements UserDetails {
         return email;
     }
 
-    public void addRole(Role role) {
-        roles.add(role);
-    }
 
-    public void removeRole(Role role) {
-        roles.remove(role);
-    }
 }

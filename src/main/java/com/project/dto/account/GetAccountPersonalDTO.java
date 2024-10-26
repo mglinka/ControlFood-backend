@@ -1,5 +1,6 @@
 package com.project.dto.account;
 
+import com.project.entity.Role;
 import com.project.utils._enum.AccountRoleEnum;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ public class GetAccountPersonalDTO {
 
     String email;
 
-    List<AccountRoleEnum> roles;
+    Role role;
 
     Boolean active;
 

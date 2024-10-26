@@ -1,5 +1,6 @@
 package com.project.mpa.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -16,8 +17,10 @@ import java.util.Objects;
 @Table(name = "product_index")
 public class ProductIndex extends AbstractEntity {
 
+    @Column(name = "indexname")
     private String indexName;
 
+    @Column(name = "indexvalue")
     private Integer indexValue;
 
     @Override

@@ -13,5 +13,5 @@ public class LabelDTO {
     private String instructionsAfterOpening;
     private String preparation;
     private String allergens;
-    //private byte [] image;
+    private String image;
 }

@@ -23,7 +23,7 @@ public class MeService {
     private final PasswordEncoder passwordEncoder;
 
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SPECIALIST', 'ROLE_USER')")
+    //@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SPECIALIST', 'ROLE_USER')")
     @Transactional
     public void getAccount() throws AppException {
 

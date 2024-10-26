@@ -1,11 +1,10 @@
 package com.project.mpa.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 
 @Getter
@@ -21,6 +20,11 @@ public class NutritionalIndex extends AbstractEntity {
     private Integer indexValue;
 
     private String legend;
+    // Assuming NutritionalIndex is related to Product
+    @ManyToMany(mappedBy = "nutritionalIndexes")
+
+    private Set<Product> products;
+
 
     @Override
     public final boolean equals(Object o) {

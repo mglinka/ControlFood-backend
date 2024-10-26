@@ -1,6 +1,8 @@
 package com.project.mpa.dto.product;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,5 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class NutritionalValueNameDTO {
     private NutritionalValueGroupDTO group;
+
+    @NotBlank
+    @Schema(example = "Witamina C")
     private String name;
 }

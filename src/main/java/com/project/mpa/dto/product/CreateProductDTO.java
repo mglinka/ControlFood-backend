@@ -3,6 +3,7 @@ package com.project.mpa.dto.product;
 import com.project.mpa.entity.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,14 @@ import java.util.UUID;
 @Data
 public class CreateProductDTO {
 
+    @NotNull
+    @Pattern(regexp = "^[0-9]{13}$" , message = "EAN must be exactly 13 digits")
     private String ean;
+
+    @NotNull
     private ProducerDTO producerDTO;
+
+
     private String productName;
     private String productDescription;
     private int productQuantity;

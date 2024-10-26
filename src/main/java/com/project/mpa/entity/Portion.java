@@ -1,5 +1,6 @@
 package com.project.mpa.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
@@ -13,6 +14,7 @@ import lombok.*;
 @Entity
 public class Portion extends AbstractEntity {
 
+    @Column(name = "portionquantity")
     private Integer portionQuantity;
 
     @ManyToOne

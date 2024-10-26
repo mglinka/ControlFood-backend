@@ -34,7 +34,7 @@ public class AllergyProfileController {
     public ResponseEntity<GetAllergyProfileDTO> getAllergyProfileById(@PathVariable UUID id){
 
         GetAllergyProfileDTO getAllergyProfileDTO = allergyProfileDTOConverter.toAllergyProfileDTO(allergyProfileService.getAllergyProfileById(id));
-        System.out.println("AAA"+getAllergyProfileDTO.getAllergens());//puste
+
 
         AllergyProfile allergyProfile = allergyProfileService.getAllergyProfileById(id);
 

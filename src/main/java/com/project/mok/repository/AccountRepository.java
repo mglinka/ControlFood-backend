@@ -19,17 +19,17 @@ import java.util.UUID;
 public interface AccountRepository extends JpaRepository<Account, UUID> {
 
 
-    Optional<Account> findByUsername(String username);
 
-    @PreAuthorize("permitAll()")
+
+
     @Override
     Account saveAndFlush(Account account);
 
-    @PreAuthorize("permitAll()")
+
     @Override
     Optional<Account> findById(UUID id);
 
-    @PreAuthorize("permitAll()")
+
     Optional<Account> findByEmail(String email);
 
 //    List<Account> findAccountByRolesContains(Role role);
@@ -40,7 +40,7 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
 //    @PreAuthorize("hasRole('ROLE_SYSTEM')")
 //    List<Account> findByNonLockedTrueAndLastSuccessfulLoginBefore(LocalDateTime dateTime);
 
-    @PreAuthorize("hasRole('ROLE_SYSTEM')")
+
     @Override
     void delete(Account account);
 

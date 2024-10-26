@@ -16,23 +16,6 @@ import java.util.Set;
 @Entity
 public class Product extends AbstractEntity {
 
-//    CREATE TABLE public.product (
-//            id uuid NOT NULL,
-//            version bigint NOT NULL,
-//            country text,
-//            ean character varying(13) NOT NULL,
-//             product_description character varying(255),
-//             product_name character varying(255) NOT NULL,
-//             product_quantity integer,
-//             composition_id uuid,
-//             label_id uuid,
-//             packagetype_id uuid,
-//             portion_id uuid,
-//             producer_id uuid,
-//             unit_id uuid
-//      );
-
-
     @Size(max = 13)
     private String ean;
 
@@ -62,9 +45,19 @@ public class Product extends AbstractEntity {
     private Composition composition;
 
     @ManyToMany
+    @JoinTable(
+            name = "product_nutritional_index",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "nutritionalindexes_id")
+    )
     private Set<NutritionalIndex> nutritionalIndexes;
 
-    @ManyToMany
+    @ManyToMany@JoinTable(
+            name = "product_product_index",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "productindexes_id")
+    )
+
     private Set<ProductIndex> productIndexes;
 
     @OneToOne
@@ -82,5 +75,10 @@ public class Product extends AbstractEntity {
     private Set<Rating> ratings;
 
     @ManyToMany
+    @JoinTable(
+            name = "product_nutritional_value",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "nutritionalvalues_id")
+    )
     private List<NutritionalValue> nutritionalValues;
 }
