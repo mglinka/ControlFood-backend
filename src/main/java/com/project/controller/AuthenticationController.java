@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.transform.SourceLocator;
+
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -23,13 +25,14 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register (@RequestBody RegisterRequest request){
+
         service.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate (@RequestBody AuthenticationRequest request) throws AppException{
-
+        System.out.println("Przed serwisem:");
         return ResponseEntity.ok(service.authenticate(request));
     }
 
@@ -43,7 +46,6 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    @PreAuthorize("hasAnyRole('ROLE_PARTICIPANT', 'ROLE_MANAGER', 'ROLE_ADMIN')")
     public ResponseEntity<?> logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         System.out.println(authentication.getName());
@@ -55,6 +57,8 @@ public class AuthenticationController {
         return ResponseEntity.badRequest().body("sss");
 
     }
+
+
 
 
 

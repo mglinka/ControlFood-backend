@@ -93,8 +93,8 @@ public class AuthenticationService {
 
         var account = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-//        String hash = passwordEncoder.encode("jane");
-//        System.out.println(hash);
+        String hash = passwordEncoder.encode("password");
+        System.out.println(hash);
 //        var jwtToken = jwtService.generateToken(account);
 
         repository.saveAndFlush(account);

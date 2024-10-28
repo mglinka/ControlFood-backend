@@ -38,7 +38,10 @@ public class SecurityConfig {
                         //.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()  // Ścieżki autoryzacyjne są publiczne
                         .requestMatchers("/api/v1/accounts/**").permitAll()
-                        .requestMatchers("/api/v1/**").permitAll()
+                        //.requestMatchers("/api/v1/**").permitAll()
+                        .requestMatchers(HttpMethod.GET ,"/api/v1/products").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET ,"/api/v1/products/withLabels").hasRole("USER")
+                        .requestMatchers("/api/v1/allergy-profiles").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/api/v1/me").permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()
@@ -67,7 +70,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Zdefiniuj odpowiednie origin (np. adres frontendowy)
+
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.CONTENT_TYPE,
