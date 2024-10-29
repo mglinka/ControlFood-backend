@@ -5,11 +5,13 @@ import com.project.dto.auth.AuthenticationResponse;
 import com.project.dto.auth.RegisterRequest;
 import com.project.entity.Account;
 import com.project.entity.AccountConfirmation;
+import com.project.entity.JWTWhitelistToken;
 import com.project.exception.abstract_exception.AppException;
 import com.project.exception.auth.AccountConfirmationTokenExpiredException;
 import com.project.exception.auth.AccountConfirmationTokenNotFoundException;
 import com.project.exception.mok.AccountNotFoundException;
 import com.project.exception.mok.RoleNotFoundException;
+import com.project.exception.mok.TokenNotFoundException;
 import com.project.repository.AccountConfirmationRepository;
 import com.project.mok.repository.AccountRepository;
 import com.project.repository.JWTWhitelistRepository;
@@ -93,7 +95,7 @@ public class AuthenticationService {
 
         var account = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        String hash = passwordEncoder.encode("password");
+        String hash = passwordEncoder.encode("P@ssword123");
         System.out.println(hash);
 //        var jwtToken = jwtService.generateToken(account);
 
@@ -139,6 +141,18 @@ public class AuthenticationService {
 
     public void logout(String token) {
         jwtWhitelistRepository.deleteByToken(token);
+    }
+
+
+    public String refreshJWT(String token) throws AppException {
+        JWTWhitelistToken jwtWhitelistToken = jwtWhitelistRepository.findByToken(token.substring(7)).orElseThrow(
+                () -> new TokenNotFoundException(ExceptionMessages.TOKEN_NOT_FOUND));
+
+        Account account = jwtWhitelistToken.getAccount();
+        jwtWhitelistRepository.delete(jwtWhitelistToken);
+        jwtWhitelistRepository.flush();
+
+        return jwtService.generateToken(new HashMap<>(), account);
     }
 
 

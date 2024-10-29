@@ -54,8 +54,13 @@ public class AuthenticationController {
         if(authentication == null) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.badRequest().body("sss");
+        return ResponseEntity.badRequest().body("");
 
+    }
+
+    @GetMapping("/refresh-token")
+    public ResponseEntity<String> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.refreshJWT(token));
     }
 
 

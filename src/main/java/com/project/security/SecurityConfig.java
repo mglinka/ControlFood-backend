@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()  // Ścieżki autoryzacyjne są publiczne
                         .requestMatchers("/api/v1/accounts/**").permitAll()
                         //.requestMatchers("/api/v1/**").permitAll()
+                        .requestMatchers("/api/v1/allergens").permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products").hasRole("USER")
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products/withLabels").hasRole("USER")
                         .requestMatchers("/api/v1/allergy-profiles").hasRole("USER")
