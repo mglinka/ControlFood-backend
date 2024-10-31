@@ -37,11 +37,10 @@ public class ProductService {
         return productRepository.findByEan(ean);
     }
 
-    public List<Product> getAllProductsWithLabels(){
-        Pageable pageable = PageRequest.of(0, 20);  // First page, 10 items
+    public List<Product> getAllProductsWithLabels(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return productRepository.findAllProductsWithLabels(pageable);
     }
-
     public Product getProductById(UUID id) {
         return productRepository.findById(id).orElseThrow();
     }
