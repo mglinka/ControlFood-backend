@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/accounts/**").permitAll()
                         //.requestMatchers("/api/v1/**").permitAll()
                         .requestMatchers("/api/v1/allergens").permitAll()
+                        .requestMatchers("/api/v1/units").permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products").hasRole("USER")
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products/withLabels").hasRole("USER")
                         .requestMatchers("/api/v1/allergy-profiles").hasRole("USER")
@@ -48,7 +49,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Stateless session management
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authenticationProvider(authenticationProvider);
 

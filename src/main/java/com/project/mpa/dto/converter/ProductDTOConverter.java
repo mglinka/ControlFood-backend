@@ -60,8 +60,15 @@ public class ProductDTOConverter {
         return dto;
     }
 
+    public UnitDTO toUnitDTO(Unit unit){
+        return modelMapper.map(unit, UnitDTO.class);
+    }
+
     public List<GetProductDTO> productDTOList(List<Product> products) {
         return products.stream().map(this::toProductDTO).collect(Collectors.toList());
+    }
+    public List<UnitDTO> unitDTOList(List<Unit> units) {
+        return units.stream().map(this::toUnitDTO).collect(Collectors.toList());
     }
 
     @Transactional

@@ -32,12 +32,10 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate (@RequestBody AuthenticationRequest request) throws AppException{
-        System.out.println("Przed serwisem:");
         return ResponseEntity.ok(service.authenticate(request));
     }
 
     @GetMapping("/verify-account/{token}")
-    @PreAuthorize("permitAll()")
     public ResponseEntity<?> verifyAccount(@PathVariable String token)
             throws AppException {
         service.verifyAccount(token);
@@ -48,9 +46,8 @@ public class AuthenticationController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(authentication.getName());
+
         SecurityContextHolder.clearContext();
-        authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null) {
             return ResponseEntity.noContent().build();
         }
@@ -62,6 +59,7 @@ public class AuthenticationController {
     public ResponseEntity<String> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return ResponseEntity.status(HttpStatus.OK).body(service.refreshJWT(token));
     }
+
 
 
 
