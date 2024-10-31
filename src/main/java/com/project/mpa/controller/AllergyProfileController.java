@@ -46,10 +46,11 @@ public class AllergyProfileController {
 
     @PostMapping("/create")
     public ResponseEntity<GetAllergyProfileDTO> createProfile(@RequestBody CreateAllergyProfileDTO createAllergyProfileDTO) {
+        System.out.println("Marta" + createAllergyProfileDTO.getAccountId());
+
         AllergyProfile savedProfile = allergyProfileService.createProfile(createAllergyProfileDTO);
 
-        System.out.println("1.Kontroler create: "+ savedProfile.getProfile_id() +"  i "+ savedProfile.getProfileAllergens());
-        System.out.println("1.Kontroler create: ");
+
         return ResponseEntity.status(HttpStatus.CREATED).body(allergyProfileDTOConverter.toAllergyProfileDTO(savedProfile));
     }
 

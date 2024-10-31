@@ -14,7 +14,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     Product findByEan(String ean);
 
-    @Query("SELECT p FROM Product p JOIN p.label l")
+    @Query("SELECT p FROM Product p JOIN p.label l ORDER BY p.productName ASC")
     List<Product> findAllProductsWithLabels(Pageable pageable);
 
 }

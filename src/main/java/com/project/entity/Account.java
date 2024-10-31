@@ -37,7 +37,7 @@ public class Account implements UserDetails {
     private boolean isEnabled = false;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "allergy_profile_id", referencedColumnName = "profile_id")
+    @JoinColumn(name = "allergy_profile_id")
     private AllergyProfile allergyProfile;
 
 //    @Column(nullable = false)

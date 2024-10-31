@@ -63,8 +63,10 @@ public class ProductController {
     }
 
     @GetMapping("/withLabels")
-    public List<GetProductDTO> getAllProductsWIthLabels(){
-        List<GetProductDTO> getProductDTOS = productDTOConverter.productDTOList(productService.getAllProductsWithLabels());
+    public List<GetProductDTO> getAllProductsWIthLabels(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size) {
+        List<GetProductDTO> getProductDTOS = productDTOConverter.productDTOList(productService.getAllProductsWithLabels(page,size));
         return ResponseEntity.status(HttpStatus.OK).body(getProductDTOS).getBody();
     }
 

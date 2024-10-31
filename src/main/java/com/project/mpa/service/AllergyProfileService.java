@@ -3,6 +3,7 @@ package com.project.mpa.service;
 
 import com.project.entity.Account;
 import com.project.exception.abstract_exception.AppException;
+import com.project.exception.mok.AccountNotFoundException;
 import com.project.mok.repository.AccountRepository;
 import com.project.mpa.dto.AllergenIntensityDTO;
 import com.project.mpa.dto.CreateAllergyProfileDTO;
@@ -40,47 +41,53 @@ public class AllergyProfileService {
 
 
 
+    @Transactional
     public AllergyProfile createProfile(CreateAllergyProfileDTO createAllergyProfileDTO) {
-        // Fetch the associated Account
         Account account = accountRepository.findById(UUID.fromString(createAllergyProfileDTO.getAccountId()))
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
 
-        // Create a new AllergyProfile instance
+        if (account.getAllergyProfile() != null) {
+            throw new RuntimeException("Account already has an allergy profile");
+        }
+
         AllergyProfile allergyProfile = new AllergyProfile();
         allergyProfile.setAccount(account);
 
-        // Save the AllergyProfile to generate the profile_id
+        System.out.println("Powino działac");
         AllergyProfile savedProfile = allergyProfileRepository.save(allergyProfile);
+        account.setAllergyProfile(savedProfile);
+        accountRepository.save(account);
+        System.out.println("działa");
 
-        // Loop through the allergens from the DTO
         for (AllergenIntensityDTO allergenDTO : createAllergyProfileDTO.getAllergens()) {
-            // Fetch the associated Allergen
             Allergen allergen = allergenRepository.findById(UUID.fromString(allergenDTO.getAllergenId()))
                     .orElseThrow(() -> new RuntimeException("Allergen not found"));
 
-            // Create a new ProfileAllergen instance
-            ProfileAllergen profileAllergen = new ProfileAllergen();
             ProfileAllergenId profileAllergenId = new ProfileAllergenId();
-
-            // Set the allergen_id and the profile_id (now safe to use savedProfile's ID)
             profileAllergenId.setAllergen_id(allergen.getAllergen_id());
-            profileAllergenId.setProfile_id(savedProfile.getProfile_id()); // Use the ID of the saved profile
+            profileAllergenId.setProfile_id(savedProfile.getProfile_id());
 
-            // Set the ID and other properties
-            profileAllergen.setId(profileAllergenId);
-            profileAllergen.setAllergen(allergen);
-            profileAllergen.setIntensity(allergenDTO.getIntensity());
+            ProfileAllergen existingProfileAllergen = profileAllergenRepository.findById(profileAllergenId).orElse(null);
 
-            // Set the relationship back to the AllergyProfile
-            profileAllergen.setAllergyProfile(savedProfile);
+            if (existingProfileAllergen != null) {
+                existingProfileAllergen.setIntensity(allergenDTO.getIntensity());
+                profileAllergenRepository.save(existingProfileAllergen);
+                savedProfile.getProfileAllergens().add(existingProfileAllergen);
+            } else {
+                ProfileAllergen profileAllergen = new ProfileAllergen();
+                profileAllergen.setId(profileAllergenId);
+                profileAllergen.setAllergen(allergen);
+                profileAllergen.setIntensity(allergenDTO.getIntensity());
+                profileAllergen.setAllergyProfile(savedProfile);
 
-            // Add the ProfileAllergen to the AllergyProfile
-            savedProfile.getProfileAllergens().add(profileAllergen);
+                profileAllergenRepository.save(profileAllergen);
+                savedProfile.getProfileAllergens().add(profileAllergen);
+            }
         }
 
-        // Save the updated AllergyProfile with its allergens
-        return allergyProfileRepository.save(savedProfile);
+        return savedProfile;
     }
+
 
 
 
