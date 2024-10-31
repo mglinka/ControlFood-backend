@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/allergens").permitAll()
                         .requestMatchers("/api/v1/units").permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products").hasAnyRole("USER", "SPECIALIST")
-                        .requestMatchers(HttpMethod.GET ,"/api/v1/products/withLabels").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET ,"/api/v1/products/withLabels").hasAnyRole("USER", "SPECIALIST")
                         .requestMatchers("/api/v1/allergy-profiles").hasRole("USER")
                         .requestMatchers("/api/v1/allergy-profiles/create").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/me").permitAll()
