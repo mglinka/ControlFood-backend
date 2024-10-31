@@ -18,7 +18,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -73,7 +72,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://orange-rock-03ed9c003.5.azurestaticapps.net"));
         configuration.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.CONTENT_TYPE,
                 HttpHeaders.AUTHORIZATION,
@@ -88,7 +87,7 @@ public class SecurityConfig {
                 HttpHeaders.ETAG
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"));
-        configuration.setAllowCredentials(true); // Umożliwia przesyłanie ciasteczek, jeśli to konieczne
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
