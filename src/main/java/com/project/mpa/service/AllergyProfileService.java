@@ -2,8 +2,6 @@ package com.project.mpa.service;
 
 
 import com.project.entity.Account;
-import com.project.exception.abstract_exception.AppException;
-import com.project.exception.mok.AccountNotFoundException;
 import com.project.mok.repository.AccountRepository;
 import com.project.mpa.dto.AllergenIntensityDTO;
 import com.project.mpa.dto.CreateAllergyProfileDTO;
@@ -18,8 +16,10 @@ import com.project.mpa.repository.allergy.AllergenRepository;
 import com.project.mpa.repository.allergy.AllergyProfileRepository;
 import com.project.mpa.repository.allergy.ProfileAllergenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -44,7 +44,7 @@ public class AllergyProfileService {
     @Transactional
     public AllergyProfile createProfile(CreateAllergyProfileDTO createAllergyProfileDTO) {
         Account account = accountRepository.findById(UUID.fromString(createAllergyProfileDTO.getAccountId()))
-                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
         if (account.getAllergyProfile() != null) {
             throw new RuntimeException("Account already has an allergy profile");
         }
@@ -91,7 +91,7 @@ public class AllergyProfileService {
 
 
 
-    public AllergyProfile updateAllergyProfile(UUID id, UpdateAllergyProfileDTO updateAllergyProfileDTO) throws AppException {
+    public AllergyProfile updateAllergyProfile(UUID id, UpdateAllergyProfileDTO updateAllergyProfileDTO) {
 
         return null;
     }

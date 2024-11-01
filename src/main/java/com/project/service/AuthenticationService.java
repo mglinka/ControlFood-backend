@@ -6,12 +6,6 @@ import com.project.dto.auth.RegisterRequest;
 import com.project.entity.Account;
 import com.project.entity.AccountConfirmation;
 import com.project.entity.JWTWhitelistToken;
-import com.project.exception.abstract_exception.AppException;
-import com.project.exception.auth.AccountConfirmationTokenExpiredException;
-import com.project.exception.auth.AccountConfirmationTokenNotFoundException;
-import com.project.exception.mok.AccountNotFoundException;
-import com.project.exception.mok.RoleNotFoundException;
-import com.project.exception.mok.TokenNotFoundException;
 import com.project.repository.AccountConfirmationRepository;
 import com.project.mok.repository.AccountRepository;
 import com.project.repository.JWTWhitelistRepository;
@@ -23,12 +17,14 @@ import com.project.utils._enum.AccountRoleEnum;
 import com.project.utils.mail.MailService;
 import com.project.utils.messages.ExceptionMessages;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -81,7 +77,7 @@ public class AuthenticationService {
     }
 
 
-    public String authenticate (AuthenticationRequest request) throws AppException{
+    public String authenticate (AuthenticationRequest request){
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -115,21 +111,20 @@ public class AuthenticationService {
 
     @PreAuthorize("permitAll()")
     @Transactional
-    public void verifyAccount(String token)
-            throws AppException {
+    public void verifyAccount(String token) {
         var accountConfirmation = accountConfirmationRepository.findByToken(token)
-                .orElseThrow(() -> new AccountConfirmationTokenNotFoundException(ExceptionMessages.CONFIRMATION_TOKEN_NOT_FOUND));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Confirmation token not found"));
 
         if (accountConfirmation.getExpirationDate().isBefore(LocalDateTime.now())) {
-            throw new AccountConfirmationTokenExpiredException(ExceptionMessages.CONFIRMATION_TOKEN_EXPIRED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Account confirmation token expired");
         }
 
         var accountId = accountConfirmation.getAccount().getId();
-        var account = repository.findById(accountId).orElseThrow(() -> new AccountNotFoundException(ExceptionMessages.ACCOUNT_NOT_FOUND));
+        var account = repository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
         account.setEnabled(true);
         account.setRole(roleRepository.findByName(AccountRoleEnum.ROLE_USER)
-                .orElseThrow(() -> new RoleNotFoundException(ExceptionMessages.ROLE_NOT_FOUND)));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found")));
 
         repository.saveAndFlush(account);
 
@@ -144,9 +139,9 @@ public class AuthenticationService {
     }
 
 
-    public String refreshJWT(String token) throws AppException {
+    public String refreshJWT(String token) {
         JWTWhitelistToken jwtWhitelistToken = jwtWhitelistRepository.findByToken(token.substring(7)).orElseThrow(
-                () -> new TokenNotFoundException(ExceptionMessages.TOKEN_NOT_FOUND));
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found"));
 
         Account account = jwtWhitelistToken.getAccount();
         jwtWhitelistRepository.delete(jwtWhitelistToken);

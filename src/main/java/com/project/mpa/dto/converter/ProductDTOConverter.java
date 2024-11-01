@@ -1,6 +1,5 @@
 package com.project.mpa.dto.converter;
 
-import com.project.exception.abstract_exception.BadRequestException;
 import com.project.mpa.dto.product.*;
 import com.project.mpa.entity.*;
 import com.project.mpa.repository.*;
@@ -144,7 +143,7 @@ public class ProductDTOConverter {
 
     private Unit findUnit(UnitDTO unitDTO) {
         return unitRepository.findByName(unitDTO.getName()).orElseThrow(
-                () -> new BadRequestException("Unit is missing")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Unit is missing")
         );
     }
 
@@ -181,7 +180,7 @@ public class ProductDTOConverter {
     }
 
     private NutritionalValueName findNutritionalValueName(NutritionalValueNameDTO nutritionalValueName) {
-        return nutritionalValueNameRepository.findByName(nutritionalValueName.getName()).orElseThrow(()-> new BadRequestException("Nutritiion value name is missing."));
+        return nutritionalValueNameRepository.findByName(nutritionalValueName.getName()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nutritiion value name is missing."));
     }
 
     private Set<ProductIndex> toProductIndexSet(Set<ProductIndexDTO> productIndexDTOS) {

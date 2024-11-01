@@ -6,7 +6,6 @@ import com.project.dto.password.RequestChangePassword;
 import com.project.dto.converter.AccountDTOConverter;
 import com.project.dto.update.UpdateAccountDataDTO;
 import com.project.entity.Account;
-import com.project.exception.abstract_exception.AppException;
 import com.project.mok.service.AccountService;
 import com.project.utils.ETagBuilder;
 import jakarta.validation.Valid;
@@ -54,7 +53,7 @@ public class AccountController {
     public ResponseEntity<GetAccountPersonalDTO> modifyAccountSelf(
             @RequestHeader("If-Match") String eTag,
             @Valid @RequestBody UpdateAccountDataDTO updateAccountDataDTO
-    ) throws AppException {
+    ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(accountDTOConverter.toAccountPersonalDTO(
                 service.updateMyAccountData(accountDTOConverter.toAccount(updateAccountDataDTO), eTag)));

@@ -3,7 +3,6 @@ package com.project.controller;
 import com.project.dto.auth.AuthenticationRequest;
 import com.project.dto.auth.AuthenticationResponse;
 import com.project.dto.auth.RegisterRequest;
-import com.project.exception.abstract_exception.AppException;
 import com.project.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -31,13 +30,12 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<String> authenticate (@RequestBody AuthenticationRequest request) throws AppException{
+    public ResponseEntity<String> authenticate (@RequestBody AuthenticationRequest request){
         return ResponseEntity.ok(service.authenticate(request));
     }
 
     @GetMapping("/verify-account/{token}")
-    public ResponseEntity<?> verifyAccount(@PathVariable String token)
-            throws AppException {
+    public ResponseEntity<?> verifyAccount(@PathVariable String token) {
         service.verifyAccount(token);
         return ResponseEntity.status(HttpStatus.OK).build();
 

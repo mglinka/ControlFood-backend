@@ -1,6 +1,5 @@
 package com.project.mpa.service;
 
-import com.project.exception.abstract_exception.NotFoundException;
 import com.project.mpa.dto.converter.ProductDTOConverter;
 import com.project.mpa.dto.product.CreateProductDTO;
 import com.project.mpa.entity.*;

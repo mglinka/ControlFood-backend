@@ -1,10 +1,6 @@
 package com.project.mpa.controller;
 
-import com.project.dto.account.GetAccountDTO;
-import com.project.entity.Account;
-import com.project.exception.abstract_exception.AppException;
 import com.project.mpa.dto.CreateAllergyProfileDTO;
-import com.project.mpa.dto.GetAllergenDTO;
 import com.project.mpa.dto.GetAllergyProfileDTO;
 import com.project.mpa.dto.UpdateAllergyProfileDTO;
 import com.project.mpa.dto.converter.AllergyProfileDTOConverter;
@@ -16,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -57,7 +52,7 @@ public class AllergyProfileController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<GetAllergyProfileDTO> updateAllergyProfile(@PathVariable UUID id, @RequestBody UpdateAllergyProfileDTO updateAllergyProfileDTO) throws AppException {
+    public ResponseEntity<GetAllergyProfileDTO> updateAllergyProfile(@PathVariable UUID id, @RequestBody UpdateAllergyProfileDTO updateAllergyProfileDTO){
         AllergyProfile updatedProfile = allergyProfileService.updateAllergyProfile(id, updateAllergyProfileDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(allergyProfileDTOConverter.toAllergyProfileDTO(updatedProfile));
     }

@@ -1,13 +1,12 @@
 package com.project.mpa.service;
 
-import com.project.exception.abstract_exception.AppException;
-import com.project.exception.mok.AccountNotFoundException;
 import com.project.mpa.dto.CreateAllergenDTO;
 import com.project.mpa.entity.allergy.Allergen;
 import com.project.mpa.repository.allergy.AllergenRepository;
-import com.project.utils.messages.ExceptionMessages;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,9 +30,9 @@ public class AllergenService {
         return allergenRepository.save(allergen);
     }
 
-    public void deleteAllergenById(UUID allergenId) throws AppException {
+    public void deleteAllergenById(UUID allergenId) {
         if (!allergenRepository.existsById(allergenId)) {
-            throw new AccountNotFoundException(ExceptionMessages.ACCOUNT_NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found");
         }
 
         allergenRepository.deleteById(allergenId);

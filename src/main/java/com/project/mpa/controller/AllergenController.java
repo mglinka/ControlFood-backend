@@ -1,6 +1,5 @@
 package com.project.mpa.controller;
 
-import com.project.exception.abstract_exception.AppException;
 import com.project.mpa.dto.GetAllergenDTO;
 import com.project.mpa.dto.converter.AllergenDTOConverter;
 import com.project.mpa.dto.CreateAllergenDTO;
@@ -39,7 +38,7 @@ public class AllergenController {
     }
 
     @DeleteMapping("/remove/{id}")
-    public ResponseEntity<?> removeAllergen(@PathVariable UUID id) throws AppException {
+    public ResponseEntity<?> removeAllergen(@PathVariable UUID id){
 
         allergenService.deleteAllergenById(id);
         return ResponseEntity.status(HttpStatus.OK).body("Allergen removed successfully.");

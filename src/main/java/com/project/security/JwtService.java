@@ -4,7 +4,6 @@ import com.project.config.ConfigurationProperties;
 import com.project.config.KeyGenerator;
 import com.project.entity.Account;
 import com.project.entity.JWTWhitelistToken;
-import com.project.exception.abstract_exception.AppException;
 import com.project.repository.JWTWhitelistRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -50,7 +49,7 @@ public class JwtService {
 
     @PreAuthorize("permitAll()")
     @Transactional
-    public String generateToken(Map<String, Object> claims, Account account) throws AppException {
+    public String generateToken(Map<String, Object> claims, Account account) {
 //        if (!account.getNonLocked()) {
 //            throw new AccountLockedException(ExceptionMessages.ACCOUNT_LOCKED);
 //        }
