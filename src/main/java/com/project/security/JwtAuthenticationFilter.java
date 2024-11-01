@@ -24,30 +24,29 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
 
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        try {
-            final String authorizationHeader = request.getHeader("Authorization");
-            final String login;
-            final String token;
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                filterChain.doFilter(request, response);
+        final String authorizationHeader = request.getHeader("Authorization");
+        final String login;
+        final String token;
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            try {
+                token = authorizationHeader.substring(7);
+                login = JwtService.extractLogin(token, KeyGenerator.getSecretKey());
+                if (login != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    jwtService.authenticate(login, token, request);
+                }
+            } catch (SignatureException | ExpiredJwtException | MalformedJwtException e) {
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                response.getWriter().write(ExceptionMessages.FORBIDDEN);
                 return;
             }
-            token = authorizationHeader.substring(7);
-            login = jwtService.extractLogin(token, KeyGenerator.getSecretKey());
-            if (login != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                jwtService.authenticate(login, token, request);
-            }
-            filterChain.doFilter(request, response);
-        } catch (SignatureException | ExpiredJwtException | MalformedJwtException e) {
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.getWriter().write(ExceptionMessages.FORBIDDEN);
         }
 
+        filterChain.doFilter(request, response);
     }
 }

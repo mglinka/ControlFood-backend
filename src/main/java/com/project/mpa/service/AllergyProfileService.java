@@ -45,7 +45,6 @@ public class AllergyProfileService {
     public AllergyProfile createProfile(CreateAllergyProfileDTO createAllergyProfileDTO) {
         Account account = accountRepository.findById(UUID.fromString(createAllergyProfileDTO.getAccountId()))
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
-
         if (account.getAllergyProfile() != null) {
             throw new RuntimeException("Account already has an allergy profile");
         }
@@ -53,11 +52,9 @@ public class AllergyProfileService {
         AllergyProfile allergyProfile = new AllergyProfile();
         allergyProfile.setAccount(account);
 
-        System.out.println("Powino działac");
-        AllergyProfile savedProfile = allergyProfileRepository.save(allergyProfile);
-        account.setAllergyProfile(savedProfile);
+        allergyProfileRepository.save(allergyProfile);
+        account.setAllergyProfile(allergyProfile);
         accountRepository.save(account);
-        System.out.println("działa");
 
         for (AllergenIntensityDTO allergenDTO : createAllergyProfileDTO.getAllergens()) {
             Allergen allergen = allergenRepository.findById(UUID.fromString(allergenDTO.getAllergenId()))
@@ -65,27 +62,28 @@ public class AllergyProfileService {
 
             ProfileAllergenId profileAllergenId = new ProfileAllergenId();
             profileAllergenId.setAllergen_id(allergen.getAllergen_id());
-            profileAllergenId.setProfile_id(savedProfile.getProfile_id());
+            profileAllergenId.setProfile_id(allergyProfile.getProfile_id());
 
             ProfileAllergen existingProfileAllergen = profileAllergenRepository.findById(profileAllergenId).orElse(null);
 
             if (existingProfileAllergen != null) {
                 existingProfileAllergen.setIntensity(allergenDTO.getIntensity());
                 profileAllergenRepository.save(existingProfileAllergen);
-                savedProfile.getProfileAllergens().add(existingProfileAllergen);
+//                savedProfile.getProfileAllergens().add(existingProfileAllergen);
             } else {
                 ProfileAllergen profileAllergen = new ProfileAllergen();
                 profileAllergen.setId(profileAllergenId);
                 profileAllergen.setAllergen(allergen);
                 profileAllergen.setIntensity(allergenDTO.getIntensity());
-                profileAllergen.setAllergyProfile(savedProfile);
+                profileAllergen.setAllergyProfile(allergyProfile);
 
                 profileAllergenRepository.save(profileAllergen);
-                savedProfile.getProfileAllergens().add(profileAllergen);
+//                allergyProfile.getProfileAllergens().add(profileAllergen);
             }
+            System.out.println("mam dosc" + allergenDTO.toString());
         }
 
-        return savedProfile;
+        return allergyProfile;
     }
 
 

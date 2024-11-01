@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import java.security.Principal;
@@ -39,6 +40,7 @@ public class AccountController {
 
     @GetMapping("/account/{id}")
     public ResponseEntity<GetAccountDTO> getAccountById(@PathVariable UUID id){
+
         GetAccountDTO getAccountDTO = accountDTOConverter.toAccountDto(service.getAccountById(id));
         Account account = service.getAccountById(id);
         String eTag = ETagBuilder.buildETag(account.getVersion().toString());

@@ -1,0 +1,28 @@
+POST http://localhost:8080/api/v1/allergy-profiles/create
+Content-Type: application/json
+
+{
+  "accountId": "cc4bf515-1b58-4d40-83b7-759a23564269",
+  "allergens": [
+    {
+      "allergenId": "2362a32b-30fb-4a53-9c95-ba4ec24a2cf7",
+      "intensity": "low"
+    }
+  ,{
+      "allergenId": "c07c9cfd-d84b-4be7-bc08-73cb7e28a9e2",
+      "intensity": "low"
+    }
+  ]
+}
+
+### istnieje
+GET http://localhost:8080/api/v1/account/cc4bf515-1b58-4d40-83b7-759a23564269
+Content-Type: application/json
+
+### nie istnieje
+GET http://localhost:8080/api/v1/account/cc4bf515-1b58-4d40-83b7-759a23564299
+Content-Type: application/json
+
+### nie istnieje
+GET http://localhost:8080/api/v1/account/abcd
+Content-Type: application/json

@@ -9,11 +9,13 @@ import com.project.mok.repository.AccountRepository;
 import com.project.utils.ETagBuilder;
 import com.project.utils.messages.ExceptionMessages;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
@@ -33,7 +35,10 @@ public class AccountService {
 
     public Account getAccountById(UUID id) {
 
-        return repository.getById(id);
+        final Account account = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
+
+        return account;
     }
 
     public void deleteAccount(UUID id) {

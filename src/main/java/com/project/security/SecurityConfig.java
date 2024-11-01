@@ -1,6 +1,7 @@
 package com.project.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +30,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
@@ -37,8 +37,11 @@ public class SecurityConfig {
                         //.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()  // Ścieżki autoryzacyjne są publiczne
                         .requestMatchers("/api/v1/accounts/**").permitAll()
+                        .requestMatchers("/api/v1/account/**").permitAll()
                         //.requestMatchers("/api/v1/**").permitAll()
-                        .requestMatchers("/api/v1/allergens/*").permitAll()
+                        .requestMatchers("/api/v1/allergens").permitAll()
+                        .requestMatchers("/api/v1/allergens/add").permitAll()
+                        .requestMatchers("/api/v1/allergens/remove/").permitAll()
                         .requestMatchers("/api/v1/units").permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products/*").permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products/withLabels").permitAll()
@@ -54,6 +57,7 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider);
 
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -42,7 +42,6 @@ public class AllergyProfile{
     public String toString() {
         return "AllergyProfile{" +
                 "profile_id=" + profile_id +
-                // Avoid printing all profile allergens directly
                 ", numberOfAllergens=" + (profileAllergens != null ? profileAllergens.size() : 0) +
                 '}';
     }
