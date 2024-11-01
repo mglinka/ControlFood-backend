@@ -15,10 +15,18 @@ import java.util.List;
 @Entity
 public class Composition extends AbstractEntity {
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "composition_ingredient",
+            joinColumns = @JoinColumn(name = "composition_id")
+    )
     private List<Ingredient> ingredients = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "composition_addition",
+            joinColumns = @JoinColumn(name = "composition_id")
+    )
     private List<Addition> additions = new ArrayList<>();
 
     @ManyToOne

@@ -21,10 +21,16 @@ public class ProductService {
     private final LabelRepository labelRepository;
     private final ProductDTOConverter productDTOConverter;
 
+    public Product getProductById(UUID id) {
+        return productRepository.findById(id).orElseThrow();
+    }
 
     @Transactional
     public Product createProduct(CreateProductDTO createProductDTO) {
         return productDTOConverter.toProduct(createProductDTO);
+    }
+    public Product findByEan(String ean) {
+        return productRepository.findByEan(ean);
     }
 
 
@@ -33,15 +39,10 @@ public class ProductService {
         return productRepository.findAll(pageable).getContent();  // Fetch the 10 items
     }
 
-    public Product findByEan(String ean) {
-        return productRepository.findByEan(ean);
-    }
 
     public List<Product> getAllProductsWithLabels(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return productRepository.findAllProductsWithLabels(pageable);
     }
-    public Product getProductById(UUID id) {
-        return productRepository.findById(id).orElseThrow();
-    }
+
 }

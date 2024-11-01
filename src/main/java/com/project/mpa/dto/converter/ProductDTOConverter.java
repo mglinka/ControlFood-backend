@@ -56,6 +56,32 @@ public class ProductDTOConverter {
 
             dto.setLabelDTO(labelDTO);
         }
+        if (product.getComposition() != null) {
+            Composition composition = product.getComposition();
+            CompositionDTO compositionDTO = new CompositionDTO();
+
+            if (composition.getIngredients() != null) {
+                List<IngredientDTO> ingredientDTOS = composition.getIngredients().stream()
+                        .map(ingredient -> new IngredientDTO(ingredient.getName()))
+                        .collect(Collectors.toList());
+                compositionDTO.setIngredientDTOS(ingredientDTOS);
+            }
+
+            if (composition.getAdditions() != null) {
+                List<AdditionDTO> additionDTOS = composition.getAdditions().stream()
+                        .map(addition -> new AdditionDTO(addition.getName())) // Zakładam, że AdditionDTO ma pole 'name'
+                        .collect(Collectors.toList());
+                compositionDTO.setAdditionDTOS(additionDTOS);
+            }
+
+            if (composition.getFlavour() != null) {
+                FlavourDTO flavourDTO = new FlavourDTO();
+                flavourDTO.setName(composition.getFlavour().getName());
+                compositionDTO.setFlavourDTO(flavourDTO);
+            }
+
+            dto.setCompositionDTO(compositionDTO);
+        }
 
         return dto;
     }

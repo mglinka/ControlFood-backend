@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -51,4 +52,6 @@ public class GetProductDTO {
     private UUID unitId;
 
     private LabelDTO labelDTO;
+
+    private CompositionDTO compositionDTO;
 }

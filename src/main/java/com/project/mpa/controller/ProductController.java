@@ -49,6 +49,8 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.FOUND).body(getProductDTO);
     }
 
+
+
     @GetMapping("/by-ean/{ean}")
     public ResponseEntity<GetProductDTO> getProductByEan(@PathVariable String ean) {
         Product product = productService.findByEan(ean);
@@ -69,7 +71,6 @@ public class ProductController {
         List<GetProductDTO> getProductDTOS = productDTOConverter.productDTOList(productService.getAllProductsWithLabels(page,size));
         return ResponseEntity.status(HttpStatus.OK).body(getProductDTOS).getBody();
     }
-
 
 
 
