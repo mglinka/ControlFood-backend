@@ -178,10 +178,20 @@ public class AllergyProfileService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
     }
 
-    public AllergyProfile getAllergyProfileByAccountId(UUID id) {
-        Account account = accountRepository.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
-        UUID profile_id = account.getAllergyProfile().getProfile_id();
-        return allergyProfileRepository.findById(profile_id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergy prfoile not found"));
-    }
 
+    public AllergyProfile getAllergyProfileByAccountId(UUID id) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+
+        // Check if the account has an associated allergy profile
+        AllergyProfile allergyProfile = account.getAllergyProfile();
+        if (allergyProfile == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergy Profile not found for this account");
+        }
+
+        // Now we can safely get the profile_id
+        UUID profile_id = allergyProfile.getProfile_id();
+        return allergyProfileRepository.findById(profile_id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergy profile not found"));
+    }
 }
