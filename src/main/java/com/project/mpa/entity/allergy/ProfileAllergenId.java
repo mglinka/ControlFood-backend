@@ -1,5 +1,6 @@
 package com.project.mpa.entity.allergy;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
@@ -13,6 +14,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ProfileAllergenId implements Serializable {
 
-    private UUID profile_id;
-    private UUID allergen_id;
+    private UUID profileId;
+    private UUID allergenId;
+
+    public ProfileAllergenId(UUID profileId, UUID allergenId) {
+        this.profileId = profileId;
+        this.allergenId = allergenId;
+    }
 }

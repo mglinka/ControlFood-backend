@@ -5,6 +5,7 @@ import com.project.mpa.dto.GetAllergyProfileDTO;
 import com.project.mpa.dto.UpdateAllergyProfileDTO;
 import com.project.mpa.dto.converter.AllergyProfileDTOConverter;
 import com.project.mpa.entity.allergy.AllergyProfile;
+import com.project.mpa.repository.allergy.AllergyProfileRepository;
 import com.project.mpa.service.AllergyProfileService;
 import com.project.utils.ETagBuilder;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +26,7 @@ public class AllergyProfileController {
 
     private final AllergyProfileService allergyProfileService;
     private final AllergyProfileDTOConverter allergyProfileDTOConverter;
+    private final AllergyProfileRepository allergyProfileRepository;
 
     @GetMapping("/{id}")
     public ResponseEntity<GetAllergyProfileDTO> getAllergyProfileById(@PathVariable UUID id){
@@ -40,8 +43,13 @@ public class AllergyProfileController {
     }
     @GetMapping("/byAccount/{id}")
     public ResponseEntity<GetAllergyProfileDTO> getAllergyProfileByAcoountId(@PathVariable UUID id){
-        GetAllergyProfileDTO getAllergyProfileDTO = allergyProfileDTOConverter.toAllergyProfileDTO(allergyProfileService.getAllergyProfileByAccountId(id));
-        return ResponseEntity.status(HttpStatus.OK).body(getAllergyProfileDTO);
+        AllergyProfile allergyProfile = allergyProfileService.getAllergyProfileByAccountId(id);
+
+        String eTag = ETagBuilder.buildETag(allergyProfile.getVersion().toString());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.ETAG,eTag)
+                .body(allergyProfileDTOConverter.toAllergyProfileDTO(allergyProfile));
     }
 
 
@@ -59,36 +67,24 @@ public class AllergyProfileController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<GetAllergyProfileDTO> updateAllergyProfile(@PathVariable UUID id, @RequestBody UpdateAllergyProfileDTO updateAllergyProfileDTO){
+    public ResponseEntity<GetAllergyProfileDTO> updateAllergyProfile(@RequestHeader("If-Match") String eTag, @PathVariable UUID id, @RequestBody UpdateAllergyProfileDTO updateAllergyProfileDTO) {
+        AllergyProfile existingProfile = allergyProfileRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergy profile not found"));
+
+        String eTag1 = ETagBuilder.buildETag(existingProfile.getVersion().toString());
+        if (!eTag1.equals(eTag)) {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "ETag does not match, resource may have been modified");
+        }
+
         AllergyProfile updatedProfile = allergyProfileService.updateAllergyProfile(id, updateAllergyProfileDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(allergyProfileDTOConverter.toAllergyProfileDTO(updatedProfile));
+
+        return ResponseEntity.status(HttpStatus.OK).body(allergyProfileDTOConverter.toAllergyProfileDTO(updatedProfile));
     }
 
-    // Pobieranie wszystkich profili alergii
     @GetMapping
     public List<GetAllergyProfileDTO> getAllProfiles() {
         List<GetAllergyProfileDTO> profiles = allergyProfileDTOConverter.allergyProfileDtoList(allergyProfileService.getAllAllergyProfile());
         return ResponseEntity.status(HttpStatus.OK).body(profiles).getBody();
     }
-//
-//    // Aktualizacja profilu alergii
-//    @PutMapping("/{id}")
-//    public ResponseEntity<AllergyProfile> updateProfile(@PathVariable UUID id, @RequestBody AllergyProfile allergyProfile) {
-//        AllergyProfile updatedProfile = allergyProfileService.updateProfile(id, allergyProfile);
-//        if (updatedProfile != null) {
-//            return new ResponseEntity<>(updatedProfile, HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//    // Usuwanie profilu alergii
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteProfile(@PathVariable UUID id) {
-//        if (allergyProfileService.deleteProfile(id)) {
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
+
 }

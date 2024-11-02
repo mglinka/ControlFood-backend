@@ -15,6 +15,8 @@ import com.project.mpa.entity.allergy.ProfileAllergenId;
 import com.project.mpa.repository.allergy.AllergenRepository;
 import com.project.mpa.repository.allergy.AllergyProfileRepository;
 import com.project.mpa.repository.allergy.ProfileAllergenRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AllergyProfileService {
 
+    @PersistenceContext
+    EntityManager entityManager;
     private final AllergyProfileRepository allergyProfileRepository;
     private final AccountRepository accountRepository;
     private final AllergenRepository allergenRepository;
@@ -63,15 +67,14 @@ public class AllergyProfileService {
                     .orElseThrow(() -> new RuntimeException("Allergen not found"));
 
             ProfileAllergenId profileAllergenId = new ProfileAllergenId();
-            profileAllergenId.setAllergen_id(allergen.getAllergen_id());
-            profileAllergenId.setProfile_id(allergyProfile.getProfile_id());
+            profileAllergenId.setAllergenId(allergen.getAllergen_id());
+            profileAllergenId.setProfileId(allergyProfile.getProfile_id());
 
             ProfileAllergen existingProfileAllergen = profileAllergenRepository.findById(profileAllergenId).orElse(null);
 
             if (existingProfileAllergen != null) {
                 existingProfileAllergen.setIntensity(allergenDTO.getIntensity());
                 profileAllergenRepository.save(existingProfileAllergen);
-//                savedProfile.getProfileAllergens().add(existingProfileAllergen);
             } else {
                 ProfileAllergen profileAllergen = new ProfileAllergen();
                 profileAllergen.setId(profileAllergenId);
@@ -80,48 +83,90 @@ public class AllergyProfileService {
                 profileAllergen.setAllergyProfile(allergyProfile);
 
                 profileAllergenRepository.save(profileAllergen);
-//                allergyProfile.getProfileAllergens().add(profileAllergen);
             }
-            System.out.println("mam dosc" + allergenDTO.toString());
         }
 
         return allergyProfile;
     }
 
 
-
-
-
-
     @Transactional
-    public AllergyProfile updateAllergyProfile(UUID id, UpdateAllergyProfileDTO updateAllergyProfileDTO) {
-        AllergyProfile allergyProfile = allergyProfileRepository.findById(id)
+    public AllergyProfile updateAllergyProfile(UUID profileId, UpdateAllergyProfileDTO updateAllergyProfileDTO) {
+        AllergyProfile allergyProfile = allergyProfileRepository.findById(profileId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergy profile not found"));
 
         List<AllergenIntensityDTO> allergens = updateAllergyProfileDTO.getAllergens();
+        if (allergens == null || allergens.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allergens list cannot be null or empty");
+        }
 
-        for (AllergenIntensityDTO allergen : allergens) {
-            String allergenIdStr = allergen.getAllergen_id();
+        Set<UUID> providedAllergenIds = allergens.stream()
+                .map(dto -> UUID.fromString(dto.getAllergen_id()))
+                .collect(Collectors.toSet());
 
-            // Validate allergen ID
+        List<ProfileAllergen> existingProfileAllergens = profileAllergenRepository.findById_ProfileId(profileId);
+        System.out.println("Current allergens in database: " + existingProfileAllergens);
+
+        for (ProfileAllergen profileAllergen : existingProfileAllergens) {
+            UUID allergenId = profileAllergen.getAllergen() != null ? profileAllergen.getAllergen().getAllergen_id() : null;
+
+            System.out.println("Checking allergen from database: " + allergenId);
+
+            if (allergenId != null && !providedAllergenIds.contains(allergenId)) {
+                ProfileAllergenId profileAllergenId = new ProfileAllergenId(profileId, allergenId);
+
+                Optional<ProfileAllergen> toDeleteOptional = profileAllergenRepository.findById(profileAllergenId);
+
+                if (toDeleteOptional.isPresent()) {
+                    ProfileAllergen toDelete = toDeleteOptional.get();
+                    System.out.println("Attempting to delete: " + toDelete);
+                    profileAllergenRepository.deleteProfileAllergen(profileId, allergenId);
+                    System.out.println("Successfully deleted: " + toDelete);
+                } else {
+                    System.out.println("No ProfileAllergen found for deletion with ID: " + profileAllergenId);
+                }
+            } else {
+                System.out.println("Allergen ID " + allergenId + " is still in the provided list, skipping deletion.");
+            }
+        }
+
+        entityManager.flush();
+
+        for (AllergenIntensityDTO allergenDTO : allergens) {
+            String allergenIdStr = allergenDTO.getAllergen_id();
             if (allergenIdStr == null || allergenIdStr.trim().isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allergen ID cannot be null or empty");
             }
 
             UUID allergenId = UUID.fromString(allergenIdStr);
-            ProfileAllergenId profileAllergenId = new ProfileAllergenId();
-            profileAllergenId.setProfile_id(id);
-            profileAllergenId.setAllergen_id(allergenId);
-            System.out.println("KLucz"+profileAllergenId);
-            ProfileAllergen profileAllergen = profileAllergenRepository.findById(profileAllergenId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Composite key not found"));
+            Allergen allergen = allergenRepository.findById(allergenId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergen not found"));
 
-            profileAllergen.setIntensity(allergen.getIntensity());
+            ProfileAllergenId profileAllergenId = new ProfileAllergenId(profileId, allergenId);
+            ProfileAllergen profileAllergen = profileAllergenRepository.findById(profileAllergenId)
+                    .orElseGet(() -> {
+                        ProfileAllergen newProfileAllergen = new ProfileAllergen();
+                        newProfileAllergen.setId(profileAllergenId);
+                        newProfileAllergen.setAllergyProfile(allergyProfile);
+                        newProfileAllergen.setAllergen(allergen);
+                        return newProfileAllergen;
+                    });
+
+            profileAllergen.setIntensity(allergenDTO.getIntensity());
             profileAllergenRepository.save(profileAllergen);
         }
 
+        entityManager.flush();
+
+        allergyProfile.setProfileAllergens(profileAllergenRepository.findById_ProfileId(profileId));
+
         return allergyProfile;
     }
+
+
+
+
+
 
 
 
@@ -138,4 +183,5 @@ public class AllergyProfileService {
         UUID profile_id = account.getAllergyProfile().getProfile_id();
         return allergyProfileRepository.findById(profile_id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergy prfoile not found"));
     }
+
 }

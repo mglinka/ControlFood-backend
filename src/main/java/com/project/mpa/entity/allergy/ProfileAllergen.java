@@ -19,16 +19,16 @@ public class ProfileAllergen implements Serializable {
     private ProfileAllergenId id;
 
     @ManyToOne
-    @MapsId("profile_id")
+    @MapsId("profileId")
     @JoinColumn(name = "profile_id", nullable = false)
     private AllergyProfile allergyProfile;
 
     @ManyToOne
-    @MapsId("allergen_id")
+    @MapsId("allergenId")
     @JoinColumn(name = "allergen_id", nullable = false)
     private Allergen allergen;
 
-    @Column(name = "intensity", nullable = true)
+    @Column(name = "intensity", nullable = false)
     private String intensity;
 
     @Override
