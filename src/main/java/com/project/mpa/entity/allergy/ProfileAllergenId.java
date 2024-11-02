@@ -1,9 +1,7 @@
 package com.project.mpa.entity.allergy;
 
 import jakarta.persistence.Embeddable;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -12,6 +10,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Embeddable
+@NoArgsConstructor
 public class ProfileAllergenId implements Serializable {
 
     private UUID profile_id;

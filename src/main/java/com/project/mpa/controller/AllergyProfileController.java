@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/allergy-profiles") // Ścieżka bazowa dla API
+@RequestMapping("/api/v1/allergy-profiles")
 public class AllergyProfileController {
 
     private final AllergyProfileService allergyProfileService;
@@ -38,6 +38,13 @@ public class AllergyProfileController {
                 .header(HttpHeaders.ETAG,eTag)
                 .body(getAllergyProfileDTO);
     }
+    @GetMapping("/byAccount/{id}")
+    public ResponseEntity<GetAllergyProfileDTO> getAllergyProfileByAcoountId(@PathVariable UUID id){
+        GetAllergyProfileDTO getAllergyProfileDTO = allergyProfileDTOConverter.toAllergyProfileDTO(allergyProfileService.getAllergyProfileByAccountId(id));
+        return ResponseEntity.status(HttpStatus.OK).body(getAllergyProfileDTO);
+    }
+
+
 
     @PostMapping("/create")
     public ResponseEntity<GetAllergyProfileDTO> createProfile(@RequestBody CreateAllergyProfileDTO createAllergyProfileDTO) {

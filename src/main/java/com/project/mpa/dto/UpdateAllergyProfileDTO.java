@@ -6,5 +6,5 @@ import java.util.List;
 
 @Data
 public class UpdateAllergyProfileDTO {
-    private List<GetAllergenDTO> allergens;
+    private List<AllergenIntensityDTO> allergens;
 }

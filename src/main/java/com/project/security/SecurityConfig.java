@@ -45,7 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/units").permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products/*").permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products/withLabels").permitAll()
-                        .requestMatchers("/api/v1/allergy-profiles/*").permitAll()
+                        .requestMatchers("/api/v1/allergy-profiles/**").permitAll()
                         .requestMatchers("/api/v1/products/withIngredients").permitAll()
                         .requestMatchers("/api/v1/allergy-profiles/create").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/me").permitAll()

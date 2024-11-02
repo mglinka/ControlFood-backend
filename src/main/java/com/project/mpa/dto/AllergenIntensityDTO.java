@@ -11,7 +11,7 @@ import lombok.*;
 public class AllergenIntensityDTO {
 
     @NotNull(message = "Allergen ID cannot be null")
-    private String allergenId; // The ID of the allergen
+    private String allergen_id; // The ID of the allergen
 
     private String intensity; // The intensity value for the allergen
 }

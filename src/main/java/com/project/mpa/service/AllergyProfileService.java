@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,7 @@ public class AllergyProfileService {
     private final ProfileAllergenRepository profileAllergenRepository;
     private final AllergyProfileDTOConverter allergyProfileDTOConverter;
     private final AllergenDTOConverter allergenDTOConverter;
+
 
     public List<AllergyProfile> getAllAllergyProfile(){
 
@@ -57,7 +59,7 @@ public class AllergyProfileService {
         accountRepository.save(account);
 
         for (AllergenIntensityDTO allergenDTO : createAllergyProfileDTO.getAllergens()) {
-            Allergen allergen = allergenRepository.findById(UUID.fromString(allergenDTO.getAllergenId()))
+            Allergen allergen = allergenRepository.findById(UUID.fromString(allergenDTO.getAllergen_id()))
                     .orElseThrow(() -> new RuntimeException("Allergen not found"));
 
             ProfileAllergenId profileAllergenId = new ProfileAllergenId();
@@ -91,19 +93,49 @@ public class AllergyProfileService {
 
 
 
+    @Transactional
     public AllergyProfile updateAllergyProfile(UUID id, UpdateAllergyProfileDTO updateAllergyProfileDTO) {
+        AllergyProfile allergyProfile = allergyProfileRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergy profile not found"));
 
-        return null;
+        List<AllergenIntensityDTO> allergens = updateAllergyProfileDTO.getAllergens();
+
+        for (AllergenIntensityDTO allergen : allergens) {
+            String allergenIdStr = allergen.getAllergen_id();
+
+            // Validate allergen ID
+            if (allergenIdStr == null || allergenIdStr.trim().isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Allergen ID cannot be null or empty");
+            }
+
+            UUID allergenId = UUID.fromString(allergenIdStr);
+            ProfileAllergenId profileAllergenId = new ProfileAllergenId();
+            profileAllergenId.setProfile_id(id);
+            profileAllergenId.setAllergen_id(allergenId);
+            System.out.println("KLucz"+profileAllergenId);
+            ProfileAllergen profileAllergen = profileAllergenRepository.findById(profileAllergenId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Composite key not found"));
+
+            profileAllergen.setIntensity(allergen.getIntensity());
+            profileAllergenRepository.save(profileAllergen);
+        }
+
+        return allergyProfile;
     }
 
-    @Transactional(readOnly = true)
-    public AllergyProfile getAllergyProfileById(UUID id) {
 
-        AllergyProfile profile = allergyProfileRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+    public AllergyProfile getAllergyProfileById(UUID id) {
 
 
         //System.out.println("Profile allergens: " + profile.getAllergens());
-        return profile;
+        return allergyProfileRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
+    }
+
+    public AllergyProfile getAllergyProfileByAccountId(UUID id) {
+        Account account = accountRepository.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+        UUID profile_id = account.getAllergyProfile().getProfile_id();
+        return allergyProfileRepository.findById(profile_id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergy prfoile not found"));
     }
 }
