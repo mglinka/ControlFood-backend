@@ -28,6 +28,7 @@ public class ProductDTOConverter {
     private final ProductRepository productRepository;
     private final NutritionalIndexRepository nutritionalIndexRepository;
     private final NutritionalValueRepository nutritionalValueRepository;
+    private final NutritionalValueGroupRepository nutritionalValueGroupRepository;
     private final NutritionalValueNameRepository nutritionalValueNameRepository;
     private final CompositionRepository compositionRepository;
     private final FlavourRepository flavourRepository;
@@ -89,11 +90,26 @@ public class ProductDTOConverter {
         return modelMapper.map(unit, UnitDTO.class);
     }
 
+    public NutritionalValueNameDTO toNutritionalValueNameDTO(NutritionalValueName nutritionalValueName){
+        return modelMapper.map(nutritionalValueName, NutritionalValueNameDTO.class);
+    }
+    public NutritionalValueGroupDTO toNutritionalValueGroupDTO(NutritionalValueGroup nutritionalValueGroup){
+        return modelMapper.map(nutritionalValueGroup, NutritionalValueGroupDTO.class);
+    }
     public List<GetProductDTO> productDTOList(List<Product> products) {
         return products.stream().map(this::toProductDTO).collect(Collectors.toList());
     }
     public List<UnitDTO> unitDTOList(List<Unit> units) {
         return units.stream().map(this::toUnitDTO).collect(Collectors.toList());
+    }
+
+    public List<NutritionalValueNameDTO> nutritionalValueNameDTOList(List<NutritionalValueName> nutritionalValueNames) {
+        return nutritionalValueNames.stream().map(this::toNutritionalValueNameDTO).collect(
+                Collectors.toList()
+        );
+    }
+    public List<NutritionalValueGroupDTO> nutritionalValueGroupDTOList(List<NutritionalValueGroup> nutritionalValueGroups){
+        return nutritionalValueGroups.stream().map(this::toNutritionalValueGroupDTO).collect(Collectors.toList());
     }
 
     @Transactional
@@ -146,6 +162,11 @@ public class ProductDTOConverter {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Unit is missing")
         );
     }
+    private NutritionalValueGroup findNutritionalValueGroup (NutritionalValueGroupDTO nutritionalValueGroupDTO) {
+        return nutritionalValueGroupRepository.findByGroupName(nutritionalValueGroupDTO.getGroupName()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group name not found")
+        );
+    }
 
     private Portion saveAndSetPortion(PortionDTO portionDTO) {
         Portion portion = modelMapper.map(portionDTO, Portion.class);
@@ -175,7 +196,8 @@ public class ProductDTOConverter {
         NutritionalValueName nutritionalValueName = findNutritionalValueName(dto.getNutritionalValueName());
         nutritionalValue.setUnit(unit);
         nutritionalValue.setNutritionalValueName(nutritionalValueName);
-
+        NutritionalValueGroup nutritionalValueGroup = findNutritionalValueGroup(dto.getNutritionalValueName().getGroup());
+        nutritionalValueName.setGroup(nutritionalValueGroup);
         return nutritionalValueRepository.saveAndFlush(nutritionalValue);
     }
 

@@ -9,7 +9,9 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @AllArgsConstructor
-public class RatingDTO {private String groupName;
+public class RatingDTO {
+
+    private String groupName;
     private String name;
     private List<String> products;
 }

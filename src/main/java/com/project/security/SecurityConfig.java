@@ -38,11 +38,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()  // Ścieżki autoryzacyjne są publiczne
                         .requestMatchers("/api/v1/accounts/**").permitAll()
                         .requestMatchers("/api/v1/account/**").permitAll()
-                        //.requestMatchers("/api/v1/**").permitAll()
+                        .requestMatchers("/api/v1/**").permitAll()
                         .requestMatchers("/api/v1/allergens").permitAll()
                         .requestMatchers("/api/v1/allergens/add").permitAll()
                         .requestMatchers("/api/v1/allergens/remove/").permitAll()
                         .requestMatchers("/api/v1/units").permitAll()
+                        .requestMatchers("/api/v1/products/add").permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products/*").permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products/withLabels").permitAll()
                         .requestMatchers("/api/v1/allergy-profiles/**").permitAll()

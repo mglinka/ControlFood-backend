@@ -5,14 +5,17 @@ import com.project.mpa.dto.converter.AllergenDTOConverter;
 import com.project.mpa.dto.CreateAllergenDTO;
 import com.project.mpa.entity.allergy.Allergen;
 import com.project.mpa.service.AllergenService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/allergens")
@@ -29,7 +32,7 @@ public class AllergenController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<GetAllergenDTO> addAllergen(@RequestBody CreateAllergenDTO createAllergenDTO) {
+    public ResponseEntity<GetAllergenDTO> addAllergen(@Valid @RequestBody CreateAllergenDTO createAllergenDTO) {
         // Assuming you have a service to handle the logic
         Allergen allergen = allergenService.createAllergen(createAllergenDTO);
 
