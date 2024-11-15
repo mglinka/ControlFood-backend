@@ -1,11 +1,13 @@
 package com.project.mpa.service;
 
 import com.project.mpa.dto.CreateAllergenDTO;
+import com.project.mpa.dto.product.UpdateAllergenDTO;
 import com.project.mpa.entity.allergy.Allergen;
 import com.project.mpa.repository.allergy.AllergenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -37,4 +39,15 @@ public class AllergenService {
 
         allergenRepository.deleteById(allergenId);
     }
+
+    @Transactional
+    public Allergen editAllergen(UUID id, UpdateAllergenDTO updateAllergenDTO) {
+        Allergen allergen = allergenRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergen not found"));
+
+        allergen.setName(updateAllergenDTO.getName());
+        allergenRepository.save(allergen);
+        return allergen;
+    }
+
 }

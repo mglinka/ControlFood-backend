@@ -3,6 +3,7 @@ package com.project.mpa.controller;
 import com.project.mpa.dto.GetAllergenDTO;
 import com.project.mpa.dto.converter.AllergenDTOConverter;
 import com.project.mpa.dto.CreateAllergenDTO;
+import com.project.mpa.dto.product.UpdateAllergenDTO;
 import com.project.mpa.entity.allergy.Allergen;
 import com.project.mpa.service.AllergenService;
 import jakarta.validation.Valid;
@@ -38,6 +39,12 @@ public class AllergenController {
 
         // Return the created allergen in the response
         return ResponseEntity.status(HttpStatus.CREATED).body(allergenDTOConverter.toAllergenDTO(allergen));
+    }
+
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<GetAllergenDTO> editAllergen(@PathVariable UUID id, @Valid @RequestBody UpdateAllergenDTO updateAllergenDTO){
+        Allergen allergen = allergenService.editAllergen(id, updateAllergenDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(allergenDTOConverter.toAllergenDTO(allergen));
     }
 
     @DeleteMapping("/remove/{id}")

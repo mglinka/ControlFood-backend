@@ -1,5 +1,6 @@
 package com.project.dto.account;
 
+import com.project.entity.Role;
 import lombok.Data;
 
 import java.util.UUID;

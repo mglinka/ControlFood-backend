@@ -2,8 +2,11 @@ package com.project.mok.service;
 
 import com.project.dto.password.RequestChangePassword;
 import com.project.entity.Account;
+import com.project.entity.Role;
 import com.project.mok.repository.AccountRepository;
+import com.project.repository.RoleRepository;
 import com.project.utils.ETagBuilder;
+import com.project.utils._enum.AccountRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +25,7 @@ import java.util.UUID;
 public class AccountService {
 
     private final AccountRepository repository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
     public List<Account> getAllAccounts(){
@@ -89,6 +93,28 @@ public class AccountService {
 
         repository.save(account);
     }
+
+    public void addSpecialistRole(UUID accountId) {
+        Account account = repository.findById(accountId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+
+        AccountRoleEnum targetRoleEnum = AccountRoleEnum.ROLE_SPECIALIST;
+
+        Role targetRole = roleRepository.findByName(targetRoleEnum)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found: " + targetRoleEnum));
+        System.out.println("Rola"+ targetRole);
+
+        if (account.getRole().equals(targetRole)) {
+            throw new IllegalStateException("Account already has the role: " + targetRoleEnum);
+        }
+
+        account.setRole(roleRepository.findByName(targetRoleEnum)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found")));
+
+        repository.save(account);
+    }
+
+
 
 
 

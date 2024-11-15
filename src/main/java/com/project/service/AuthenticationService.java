@@ -77,6 +77,9 @@ public class AuthenticationService {
 
 
     public String authenticate (AuthenticationRequest request){
+        String hash = passwordEncoder.encode("P@ssword123");
+        System.out.println(hash);
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -90,8 +93,7 @@ public class AuthenticationService {
 
         var account = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        String hash = passwordEncoder.encode("P@ssword123");
-        System.out.println(hash);
+
 //        var jwtToken = jwtService.generateToken(account);
 
         repository.saveAndFlush(account);

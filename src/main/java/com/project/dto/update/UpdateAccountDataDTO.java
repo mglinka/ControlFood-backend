@@ -12,6 +12,5 @@ public class UpdateAccountDataDTO {
     String firstName;
     @Size(min = 2, max = 64, message = ExceptionMessages.INCORRECT_LAST_NAME)
     String lastName;
-    @NotNull(message = ExceptionMessages.INCORRECT_GENDER)
-    Integer gender;
+
 }

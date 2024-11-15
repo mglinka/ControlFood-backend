@@ -6,8 +6,10 @@ import com.project.dto.password.RequestChangePassword;
 import com.project.dto.converter.AccountDTOConverter;
 import com.project.dto.update.UpdateAccountDataDTO;
 import com.project.entity.Account;
+import com.project.entity.Role;
 import com.project.mok.service.AccountService;
 import com.project.utils.ETagBuilder;
+import com.project.utils._enum.AccountRoleEnum;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -74,6 +76,12 @@ public class AccountController {
             Principal connectedUser
     ) {
         service.changePassword(request, connectedUser);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/addSpecialist")
+    public  ResponseEntity<?> addSpecialistRole(UUID accountId){
+        service.addSpecialistRole(accountId);
         return ResponseEntity.ok().build();
     }
 
