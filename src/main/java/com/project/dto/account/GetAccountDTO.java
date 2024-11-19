@@ -15,4 +15,6 @@ public class GetAccountDTO {
     private String firstName;
 
     private String lastName;
+    private String role;
+    private Boolean enabled;
 }

@@ -34,7 +34,8 @@ public class Account implements UserDetails {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")  // Ensure the referencedColumnName matches your Role entity's ID
     private Role role;
-    private boolean isEnabled = false;
+    @Column(name = "is_enabled")
+    private Boolean enabled = false;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "allergy_profile_id")
@@ -67,6 +68,7 @@ public class Account implements UserDetails {
                 ", allergyProfileId=" + (allergyProfile != null ? allergyProfile.getProfile_id() : null) +
                 '}';
     }
+
 
 
     @Override

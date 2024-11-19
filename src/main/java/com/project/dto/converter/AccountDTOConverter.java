@@ -3,10 +3,13 @@ package com.project.dto.converter;
 import com.project.dto.CreateAccountDTO;
 import com.project.dto.account.GetAccountDTO;
 import com.project.dto.account.GetAccountPersonalDTO;
+import com.project.dto.account.RoleDTO;
 import com.project.dto.update.UpdateAccountDataDTO;
 import com.project.entity.Account;
+import com.project.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,28 +22,36 @@ public class AccountDTOConverter {
     @Autowired
     private ModelMapper modelMapper;
 
+    public RoleDTO toRoleDTO(Role role) {
+        return modelMapper.map(role, RoleDTO.class);
+    }
+
+    public List<RoleDTO> roleDtoList(List<Role> roles) {
+        return roles.stream().map(this::toRoleDTO).toList();
+    }
+
     public Account toAccount(CreateAccountDTO createAccountDTO) {
-        Account account = modelMapper.map(createAccountDTO, Account.class);
-        return account;
+        return modelMapper.map(createAccountDTO, Account.class);
 
 
     }
 
     public Account toAccount(UpdateAccountDataDTO updateAccountDataDTO) {
-        Account account = modelMapper.map(updateAccountDataDTO, Account.class);
-        return account;
+        return modelMapper.map(updateAccountDataDTO, Account.class);
 
 
     }
 
     public GetAccountPersonalDTO toAccountPersonalDTO (Account account){
-        GetAccountPersonalDTO getAccountPersonalDTO = modelMapper.map(account, GetAccountPersonalDTO.class);
-        return getAccountPersonalDTO;
+        return modelMapper.map(account, GetAccountPersonalDTO.class);
     }
 
     public GetAccountDTO toAccountDto(Account account) {
-
         GetAccountDTO getAccountDTO = modelMapper.map(account, GetAccountDTO.class);
+
+        getAccountDTO.setEnabled(account.getEnabled());
+        getAccountDTO.setRole(account.getRole().getRoleName());
+
         return getAccountDTO;
     }
 

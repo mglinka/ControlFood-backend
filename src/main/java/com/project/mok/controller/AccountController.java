@@ -2,6 +2,7 @@ package com.project.mok.controller;
 
 import com.project.dto.account.GetAccountDTO;
 import com.project.dto.account.GetAccountPersonalDTO;
+import com.project.dto.account.RoleDTO;
 import com.project.dto.password.RequestChangePassword;
 import com.project.dto.converter.AccountDTOConverter;
 import com.project.dto.update.UpdateAccountDataDTO;
@@ -79,9 +80,29 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/addSpecialist")
-    public  ResponseEntity<?> addSpecialistRole(UUID accountId){
-        service.addSpecialistRole(accountId);
+
+    @GetMapping("/roles")
+    public List<RoleDTO> getAllRoles(){
+        List<RoleDTO> getRolesDTO = accountDTOConverter.roleDtoList(service.getAllRoles());
+        return ResponseEntity.status(HttpStatus.OK).body(getRolesDTO).getBody();
+
+    }
+
+    @PutMapping("/changeRole")
+    public ResponseEntity<?> changeRole(@RequestParam UUID accountId, @RequestParam UUID roleId){
+        service.changeRole(accountId, roleId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/account/enableAccount")
+    public ResponseEntity<?> enableAccount(UUID id) {
+        service.enableAccount(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/account/disableAccount")
+    public ResponseEntity<?> disableAccount(UUID id) {
+        service.disableAccount(id);
         return ResponseEntity.ok().build();
     }
 

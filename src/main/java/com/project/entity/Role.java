@@ -26,6 +26,9 @@ public class Role extends AbstractEntity implements GrantedAuthority {
     @Enumerated(EnumType.STRING)
     private AccountRoleEnum name;
 
+    public String getRoleName() {
+        return name.name().replace("ROLE_", "");
+    }
 
     @Override
     public final boolean equals(Object o) {

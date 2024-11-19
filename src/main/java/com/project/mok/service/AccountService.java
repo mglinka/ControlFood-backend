@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
@@ -94,30 +95,49 @@ public class AccountService {
         repository.save(account);
     }
 
-    public void addSpecialistRole(UUID accountId) {
+    public void changeRole (UUID accountId, UUID roleId) {
         Account account = repository.findById(accountId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
-        AccountRoleEnum targetRoleEnum = AccountRoleEnum.ROLE_SPECIALIST;
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
 
-        Role targetRole = roleRepository.findByName(targetRoleEnum)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found: " + targetRoleEnum));
-        System.out.println("Rola"+ targetRole);
-
-        if (account.getRole().equals(targetRole)) {
-            throw new IllegalStateException("Account already has the role: " + targetRoleEnum);
+        // Check if the account already has the role
+        if(account.getRole() != null && account.getRole().equals(role)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account already has this access level");
         }
 
-        account.setRole(roleRepository.findByName(targetRoleEnum)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found")));
-
+        // Set the new role and save the account
+        account.setRole(role);
         repository.save(account);
     }
 
+    @Transactional
+    public void enableAccount(UUID id) {
+        Account account = repository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
+        if(account.getEnabled()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account is already enabled");
+        }
+        account.setEnabled(true);
+        repository.saveAndFlush(account);
 
+    }
 
+    @Transactional
+    public void disableAccount(UUID id) {
+        Account account = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
+        if (!account.getEnabled()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account is already disabled");
+        }
 
+        account.setEnabled(false);
+        repository.saveAndFlush(account);
+    }
 
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
+    }
 }
