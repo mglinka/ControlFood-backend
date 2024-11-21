@@ -10,6 +10,7 @@ public class CreateAllergenDTO {
 
     @NotBlank(message = "Allergen name is required.")
     @Size(max = 50, message = "Allergen name cannot exceed 50 characters.")
-    @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Allergen name can only contain letters and spaces.")
+    @Pattern(regexp = "^[A-Za-ząćęłńóśżźĄĆĘŁŃÓŚŻŹ\\s]+$", message = "Allergen name can only contain letters (including Polish characters) and spaces.")
     private String name;
+
 }

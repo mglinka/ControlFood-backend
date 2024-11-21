@@ -4,6 +4,7 @@ import com.project.mpa.entity.Product;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     Product findByEan(String ean);
 
-    @Query("SELECT p FROM Product p JOIN p.label l ORDER BY p.productName ASC")
-    List<Product> findAllProductsWithLabels(Pageable pageable);
+    @Query("SELECT p FROM Product p JOIN p.label l WHERE lower(p.productName) LIKE lower(CONCAT('%', :query, '%')) ORDER BY p.productName ASC")
+    List<Product> findAllProductsWithLabels(Pageable pageable, @Param("query") String query);
 
 }

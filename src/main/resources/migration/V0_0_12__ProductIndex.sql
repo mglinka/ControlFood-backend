@@ -1,0 +1,1 @@
+create index idx_product_name_lower on product(lower(product.product_name));

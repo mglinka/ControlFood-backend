@@ -34,10 +34,8 @@ public class AllergenController {
 
     @PostMapping("/add")
     public ResponseEntity<GetAllergenDTO> addAllergen(@Valid @RequestBody CreateAllergenDTO createAllergenDTO) {
-        // Assuming you have a service to handle the logic
         Allergen allergen = allergenService.createAllergen(createAllergenDTO);
 
-        // Return the created allergen in the response
         return ResponseEntity.status(HttpStatus.CREATED).body(allergenDTOConverter.toAllergenDTO(allergen));
     }
 
