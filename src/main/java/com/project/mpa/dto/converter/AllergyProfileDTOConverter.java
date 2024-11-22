@@ -1,11 +1,10 @@
 package com.project.mpa.dto.converter;
 
 import com.project.dto.CreateAccountDTO;
-import com.project.mpa.dto.GetAllergenDTO;
-import com.project.mpa.dto.GetAllergenIntensityDTO;
-import com.project.mpa.dto.GetAllergyProfileDTO;
+import com.project.mpa.dto.*;
 import com.project.mpa.entity.allergy.Allergen;
 import com.project.mpa.entity.allergy.AllergyProfile;
+import com.project.mpa.entity.allergy.AllergyProfileSchema;
 import com.project.mpa.entity.allergy.ProfileAllergen;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -39,6 +38,18 @@ public class AllergyProfileDTOConverter {
         return getAllergyProfileDTO;
     }
 
+    public GetAllergyProfileSchemaDTO toAllergyProfileSchemaDTO(AllergyProfileSchema allergyProfileSchema) {
+        GetAllergyProfileSchemaDTO getAllergyProfileSchemaDTO = modelMapper.map(allergyProfileSchema, GetAllergyProfileSchemaDTO.class);
+
+        List<GetAllergenDTO> allergenDTOs = allergyProfileSchema.getAllergens().stream()
+                .map(allergen -> modelMapper.map(allergen, GetAllergenDTO.class)) // Map each Allergen to GetAllergenDTO
+                .collect(Collectors.toList());
+
+        getAllergyProfileSchemaDTO.setAllergens(allergenDTOs);
+
+        return getAllergyProfileSchemaDTO;
+    }
+
     /**
      * Convert ProfileAllergen to GetAllergenIntensityDTO.
      *
@@ -58,6 +69,10 @@ public class AllergyProfileDTOConverter {
 
     public List<GetAllergyProfileDTO> allergyProfileDtoList(List<AllergyProfile> accounts) {
         return accounts.stream().map(this::toAllergyProfileDTO).toList();
+    }
+
+    public List<GetAllergyProfileSchemaDTO> allergyProfileSchemaDtoList(List<AllergyProfileSchema> allergyProfileSchemaList) {
+        return allergyProfileSchemaList.stream().map(this::toAllergyProfileSchemaDTO).toList();
     }
 //
 //

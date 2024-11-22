@@ -29,7 +29,6 @@ public class AllergyProfileController {
 
     private final AllergyProfileService allergyProfileService;
     private final AllergyProfileDTOConverter allergyProfileDTOConverter;
-    private final AllergyProfileRepository allergyProfileRepository;
     private final AccountRepository accountRepository;
 
     @GetMapping("/{id}")
@@ -87,28 +86,5 @@ public class AllergyProfileController {
         List<GetAllergyProfileDTO> profiles = allergyProfileDTOConverter.allergyProfileDtoList(allergyProfileService.getAllAllergyProfile());
         return ResponseEntity.status(HttpStatus.OK).body(profiles).getBody();
     }
-
-//
-//    @PutMapping("/update/{accountId}")
-//    public ResponseEntity<GetAllergyProfileDTO> updateAllergyProfile(@RequestHeader("If-Match") String eTag, @PathVariable UUID accountId, @RequestBody UpdateAllergyProfileDTO updateAllergyProfileDTO) {
-//        Account account = accountRepository.findById(accountId)
-//                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
-//
-//        UUID profileId = account.getAllergyProfile().getProfile_id();
-//
-//
-//
-//        Optional<AllergyProfile> existingProfile = allergyProfileRepository.findById(profileId);
-//
-//        String eTag1 = ETagBuilder.buildETag(existingProfile.get().getVersion().toString());
-//        if (!eTag1.equals(eTag)) {
-//            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "ETag does not match, resource may have been modified");
-//        }
-//
-//
-//        AllergyProfile updatedProfile = allergyProfileService.updateAllergyProfile(profileId, updateAllergyProfileDTO);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(allergyProfileDTOConverter.toAllergyProfileDTO(updatedProfile));
-//    }
 
 }
