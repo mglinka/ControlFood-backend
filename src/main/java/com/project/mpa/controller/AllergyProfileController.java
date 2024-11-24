@@ -2,9 +2,7 @@ package com.project.mpa.controller;
 
 import com.project.entity.Account;
 import com.project.mok.repository.AccountRepository;
-import com.project.mpa.dto.CreateAllergyProfileDTO;
-import com.project.mpa.dto.GetAllergyProfileDTO;
-import com.project.mpa.dto.UpdateAllergyProfileDTO;
+import com.project.mpa.dto.*;
 import com.project.mpa.dto.converter.AllergyProfileDTOConverter;
 import com.project.mpa.entity.allergy.AllergyProfile;
 import com.project.mpa.repository.allergy.AllergyProfileRepository;
@@ -87,4 +85,10 @@ public class AllergyProfileController {
         return ResponseEntity.status(HttpStatus.OK).body(profiles).getBody();
     }
 
+    @PostMapping("/assignProfile")
+    public ResponseEntity<?> assignAllergyProfile(@RequestBody AssignProfileDTO dto){
+        System.out.println("Start");
+        allergyProfileService.assignAllergyProfile(dto);
+        return ResponseEntity.ok().build();
+    }
 }

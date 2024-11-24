@@ -3,9 +3,7 @@ package com.project.mpa.service;
 
 import com.project.entity.Account;
 import com.project.mok.repository.AccountRepository;
-import com.project.mpa.dto.AllergenIntensityDTO;
-import com.project.mpa.dto.CreateAllergyProfileDTO;
-import com.project.mpa.dto.UpdateAllergyProfileDTO;
+import com.project.mpa.dto.*;
 import com.project.mpa.dto.converter.AllergenDTOConverter;
 import com.project.mpa.dto.converter.AllergyProfileDTOConverter;
 import com.project.mpa.entity.allergy.Allergen;
@@ -19,6 +17,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -173,7 +173,6 @@ public class AllergyProfileService {
     public AllergyProfile getAllergyProfileById(UUID id) {
 
 
-        //System.out.println("Profile allergens: " + profile.getAllergens());
         return allergyProfileRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
     }
@@ -183,15 +182,83 @@ public class AllergyProfileService {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
-        // Check if the account has an associated allergy profile
         AllergyProfile allergyProfile = account.getAllergyProfile();
         if (allergyProfile == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergy Profile not found for this account");
         }
 
-        // Now we can safely get the profile_id
         UUID profile_id = allergyProfile.getProfile_id();
         return allergyProfileRepository.findById(profile_id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergy profile not found"));
     }
+
+    @Transactional
+    public AllergyProfile assignAllergyProfile(AssignProfileDTO dto) {
+        System.out.println("DTO received: " + dto);
+
+        // Check if the authenticated user already has an allergy profile
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if (!(principal instanceof Account)) {
+            throw new IllegalStateException("Authenticated principal is not an instance of Account");
+        }
+
+        Account account = (Account) principal;
+
+        // Retrieve the account from the repository to check if it already has an allergy profile
+        Optional<Account> optionalAccount = accountRepository.findById(account.getId());
+        if (optionalAccount.isEmpty()) {
+            throw new IllegalArgumentException("Account not found with ID: " + account.getId());
+        }
+
+        Account persistedAccount = optionalAccount.get();
+
+        // Check if the account already has an AllergyProfile
+        if (persistedAccount.getAllergyProfile() != null) {
+            throw new RuntimeException("Account already has an allergy profile.");
+        }
+
+        // Create a new AllergyProfile
+        AllergyProfile allergyProfile = new AllergyProfile();
+        allergyProfile.setAccount(persistedAccount);  // Link the profile to the account
+
+        // Map allergens from DTO to ProfileAllergen entities
+        List<ProfileAllergen> profileAllergens = dto.getAllergens().stream()
+                .map(allergenDTO -> {
+                    UUID allergenId = allergenDTO.getAllergen_id();
+                    Allergen allergen = allergenRepository.findById(allergenId)
+                            .orElseThrow(() -> new IllegalArgumentException("Allergen not found with ID: " + allergenId));
+
+                    ProfileAllergen profileAllergen = new ProfileAllergen();
+                    ProfileAllergenId profileAllergenId = new ProfileAllergenId();
+                    profileAllergenId.setAllergenId(allergenId);
+                    profileAllergenId.setProfileId(allergyProfile.getProfile_id());
+
+                    profileAllergen.setId(profileAllergenId);
+                    profileAllergen.setIntensity(dto.getIntensity());  // Corrected to use the intensity from the DTO
+                    profileAllergen.setAllergen(allergen);
+                    profileAllergen.setAllergyProfile(allergyProfile);
+
+                    return profileAllergen;
+                })
+                .collect(Collectors.toList());
+
+        allergyProfile.setProfileAllergens(profileAllergens);  // Set the allergens on the profile
+
+        // Persist the AllergyProfile
+        AllergyProfile savedProfile = allergyProfileRepository.save(allergyProfile);
+
+        // Save the account with the updated allergyProfile reference (to persist the foreign key)
+        persistedAccount.setAllergyProfile(savedProfile);  // Link the allergy profile back to the account
+        accountRepository.save(persistedAccount);  // Explicitly save the account again to persist the foreign key
+
+        System.out.println("Profile successfully assigned with ID: " + savedProfile.getProfile_id());
+
+        return savedProfile;
+    }
+
+
+
+
 }

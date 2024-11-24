@@ -54,4 +54,8 @@ public class GetProductDTO {
     private LabelDTO labelDTO;
 
     private CompositionDTO compositionDTO;
+
+    private NutritionalIndexDTO nutritionalIndexDTO;
+    private ProductIndexDTO productIndexDTO;
+    private NutritionalValueDTO nutritionalValueDTO;
 }
