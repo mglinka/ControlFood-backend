@@ -55,7 +55,6 @@ public class GetProductDTO {
 
     private CompositionDTO compositionDTO;
 
-    private NutritionalIndexDTO nutritionalIndexDTO;
-    private ProductIndexDTO productIndexDTO;
-    private NutritionalValueDTO nutritionalValueDTO;
+    @NotNull
+    private List<NutritionalValueDTO> nutritionalValueDTOS;
 }

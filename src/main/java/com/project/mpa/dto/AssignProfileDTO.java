@@ -1,5 +1,6 @@
 package com.project.mpa.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -14,10 +15,10 @@ import java.util.UUID;
 public class AssignProfileDTO {
 
     @NotNull
-    private UUID schema_id;
-
-    @NotNull
-    private List<AllergenDTO> allergens;
+    @NotEmpty
+    private List<UUID> schema_ids;
+//    @NotNull
+//    private List<AllergenDTO> allergens;
 
     private String intensity;
 }

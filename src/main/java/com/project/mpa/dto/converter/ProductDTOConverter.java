@@ -38,6 +38,7 @@ public class ProductDTOConverter {
     public GetProductDTO toProductDTO(Product product) {
         GetProductDTO dto = modelMapper.map(product, GetProductDTO.class);
 
+        // Map Label
         if (product.getLabel() != null) {
             Label label = product.getLabel();
             LabelDTO labelDTO = new LabelDTO();
@@ -48,7 +49,6 @@ public class ProductDTOConverter {
             labelDTO.setPreparation(label.getPreparation());
             labelDTO.setAllergens(label.getAllergens());
 
-
             if (label.getImage() != null) {
                 String base64Image = Base64.getEncoder().encodeToString(label.getImage());
                 labelDTO.setImage(base64Image);
@@ -56,6 +56,8 @@ public class ProductDTOConverter {
 
             dto.setLabelDTO(labelDTO);
         }
+
+        // Map Composition
         if (product.getComposition() != null) {
             Composition composition = product.getComposition();
             CompositionDTO compositionDTO = new CompositionDTO();
@@ -69,7 +71,7 @@ public class ProductDTOConverter {
 
             if (composition.getAdditions() != null) {
                 List<AdditionDTO> additionDTOS = composition.getAdditions().stream()
-                        .map(addition -> new AdditionDTO(addition.getName())) // Zakładam, że AdditionDTO ma pole 'name'
+                        .map(addition -> new AdditionDTO(addition.getName()))
                         .collect(Collectors.toList());
                 compositionDTO.setAdditionDTOS(additionDTOS);
             }
@@ -83,11 +85,54 @@ public class ProductDTOConverter {
             dto.setCompositionDTO(compositionDTO);
         }
 
+        // Map Nutritional Values
+        if (product.getNutritionalValues() != null) {
+            List<NutritionalValueDTO> nutritionalValueDTOS = product.getNutritionalValues().stream()
+                    .map(nutritionalValue -> {
+                        NutritionalValueDTO nutritionalValueDTO = new NutritionalValueDTO();
+
+                        // Set NutritionalValueName
+                        NutritionalValueNameDTO nameDTO = new NutritionalValueNameDTO();
+                        nameDTO.setName(nutritionalValue.getNutritionalValueName().getName());
+
+                        // Set NutritionalValueGroup if available
+                        if (nutritionalValue.getNutritionalValueName().getGroup() != null) {
+                            NutritionalValueGroupDTO groupDTO = new NutritionalValueGroupDTO();
+                            groupDTO.setGroupName(nutritionalValue.getNutritionalValueName().getGroup().getGroupName());
+                            nameDTO.setGroup(groupDTO);
+                        }
+                        nutritionalValueDTO.setNutritionalValueName(nameDTO);
+
+                        // Set Quantity
+                        nutritionalValueDTO.setQuantity(nutritionalValue.getQuantity());
+
+                        // Set Unit if available
+                        if (nutritionalValue.getUnit() != null) {
+                            UnitDTO unitDTO = new UnitDTO();
+                            unitDTO.setName(nutritionalValue.getUnit().getName());
+                            nutritionalValueDTO.setUnit(unitDTO);
+                        }
+
+                        // Set NRV
+                        nutritionalValueDTO.setNrv(nutritionalValue.getNrv());
+
+                        return nutritionalValueDTO;
+                    })
+                    .collect(Collectors.toList());
+
+            dto.setNutritionalValueDTOS(nutritionalValueDTOS);
+        }
+
         return dto;
     }
 
+
     public UnitDTO toUnitDTO(Unit unit){
         return modelMapper.map(unit, UnitDTO.class);
+    }
+
+    public PackageTypeDTO toPackageTypeDTO(PackageType packageType){
+        return modelMapper.map(packageType, PackageTypeDTO.class);
     }
 
     public NutritionalValueNameDTO toNutritionalValueNameDTO(NutritionalValueName nutritionalValueName){
@@ -101,6 +146,10 @@ public class ProductDTOConverter {
     }
     public List<UnitDTO> unitDTOList(List<Unit> units) {
         return units.stream().map(this::toUnitDTO).collect(Collectors.toList());
+    }
+
+    public List<PackageTypeDTO> packageTypeDTOList(List<PackageType> packageTypes){
+        return packageTypes.stream().map(this::toPackageTypeDTO).collect(Collectors.toList());
     }
 
     public List<NutritionalValueNameDTO> nutritionalValueNameDTOList(List<NutritionalValueName> nutritionalValueNames) {
@@ -118,15 +167,15 @@ public class ProductDTOConverter {
         product.setComposition(saveAndSetComposition(createProductDTO.getCompositionDTO()));
         product.setLabel(saveAndSetLabel(createProductDTO.getLabelDTO()));
         product.setProducer(saveAndSetProducer(createProductDTO.getProducerDTO()));
-        product.setPackageType(saveAndSetPackageType(createProductDTO.getPackageTypeDTO()));
+        product.setPackageType(findPackageType(createProductDTO.getPackageTypeDTO()));
 
         product.setUnit(findUnit(createProductDTO.getUnitDTO()));
         product.setPortion(saveAndSetPortion(createProductDTO.getPortionDTO()));
-        product.setNutritionalIndexes(saveAndSetNutritionalIndexes(createProductDTO.getNutritionalIndexDTOS()));
-        // TU
+//        product.setNutritionalIndexes(saveAndSetNutritionalIndexes(createProductDTO.getNutritionalIndexDTOS()));
+
         product.setNutritionalValues(saveAndSetNutritionalValues(createProductDTO.getNutritionalValueDTOS()));
-        product.setProductIndexes(toProductIndexSet(createProductDTO.getProductIndexDTOS()));
-        product.setRatings(toRatingSet(createProductDTO.getRatingDTOS()));
+//        product.setProductIndexes(toProductIndexSet(createProductDTO.getProductIndexDTOS()));
+        //product.setRatings(toRatingSet(createProductDTO.getRatingDTOS()));
 
         return productRepository.saveAndFlush(product);
     }
@@ -147,9 +196,10 @@ public class ProductDTOConverter {
         return producerRepository.saveAndFlush(producer);
     }
 
-    private PackageType saveAndSetPackageType(PackageTypeDTO packageTypeDTO) {
-        PackageType packageType = modelMapper.map(packageTypeDTO, PackageType.class);
-        return packageTypeRepository.saveAndFlush(packageType);
+    private PackageType findPackageType(PackageTypeDTO packageTypeDTO) {
+        return packageTypeRepository.findByName(packageTypeDTO.getName()).orElseThrow(
+        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "PackageType is not found")
+        );
     }
 
     private Flavour saveAndSetFlavour(FlavourDTO flavourDTO) {

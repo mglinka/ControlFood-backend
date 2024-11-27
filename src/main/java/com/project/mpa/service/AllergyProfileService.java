@@ -6,12 +6,10 @@ import com.project.mok.repository.AccountRepository;
 import com.project.mpa.dto.*;
 import com.project.mpa.dto.converter.AllergenDTOConverter;
 import com.project.mpa.dto.converter.AllergyProfileDTOConverter;
-import com.project.mpa.entity.allergy.Allergen;
-import com.project.mpa.entity.allergy.AllergyProfile;
-import com.project.mpa.entity.allergy.ProfileAllergen;
-import com.project.mpa.entity.allergy.ProfileAllergenId;
+import com.project.mpa.entity.allergy.*;
 import com.project.mpa.repository.allergy.AllergenRepository;
 import com.project.mpa.repository.allergy.AllergyProfileRepository;
+import com.project.mpa.repository.allergy.AllergyProfileSchemaRepository;
 import com.project.mpa.repository.allergy.ProfileAllergenRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -36,9 +34,7 @@ public class AllergyProfileService {
     private final AccountRepository accountRepository;
     private final AllergenRepository allergenRepository;
     private final ProfileAllergenRepository profileAllergenRepository;
-    private final AllergyProfileDTOConverter allergyProfileDTOConverter;
-    private final AllergenDTOConverter allergenDTOConverter;
-
+    private final AllergyProfileSchemaRepository allergyProfileSchemaRepository;
 
     public List<AllergyProfile> getAllAllergyProfile(){
 
@@ -196,7 +192,7 @@ public class AllergyProfileService {
     public AllergyProfile assignAllergyProfile(AssignProfileDTO dto) {
         System.out.println("DTO received: " + dto);
 
-        // Check if the authenticated user already has an allergy profile
+        // Pobranie uwierzytelnionego użytkownika
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
@@ -206,7 +202,7 @@ public class AllergyProfileService {
 
         Account account = (Account) principal;
 
-        // Retrieve the account from the repository to check if it already has an allergy profile
+        // Pobranie konta z repozytorium
         Optional<Account> optionalAccount = accountRepository.findById(account.getId());
         if (optionalAccount.isEmpty()) {
             throw new IllegalArgumentException("Account not found with ID: " + account.getId());
@@ -214,29 +210,37 @@ public class AllergyProfileService {
 
         Account persistedAccount = optionalAccount.get();
 
-        // Check if the account already has an AllergyProfile
+        // Sprawdzenie, czy konto już posiada profil alergii
         if (persistedAccount.getAllergyProfile() != null) {
             throw new RuntimeException("Account already has an allergy profile.");
         }
 
-        // Create a new AllergyProfile
+        // Utworzenie nowego AllergyProfile
         AllergyProfile allergyProfile = new AllergyProfile();
-        allergyProfile.setAccount(persistedAccount);  // Link the profile to the account
+        allergyProfile.setAccount(persistedAccount); // Powiązanie profilu z kontem
 
-        // Map allergens from DTO to ProfileAllergen entities
-        List<ProfileAllergen> profileAllergens = dto.getAllergens().stream()
-                .map(allergenDTO -> {
-                    UUID allergenId = allergenDTO.getAllergen_id();
-                    Allergen allergen = allergenRepository.findById(allergenId)
-                            .orElseThrow(() -> new IllegalArgumentException("Allergen not found with ID: " + allergenId));
+        // Pobranie schematów na podstawie `schema_ids` z DTO
+        List<AllergyProfileSchema> schemas = dto.getSchema_ids().stream()
+                .map(schemaId -> allergyProfileSchemaRepository.findById(schemaId)
+                        .orElseThrow(() -> new IllegalArgumentException("Schema not found with ID: " + schemaId)))
+                .collect(Collectors.toList());
 
+        // Ekstrakcja alergenów z wybranych schematów
+        List<Allergen> allergens = schemas.stream()
+                .flatMap(schema -> schema.getAllergens().stream())
+                .distinct() // Usunięcie ewentualnych duplikatów
+                .collect(Collectors.toList());
+
+        // Mapowanie alergenów na encje ProfileAllergen
+        List<ProfileAllergen> profileAllergens = allergens.stream()
+                .map(allergen -> {
                     ProfileAllergen profileAllergen = new ProfileAllergen();
                     ProfileAllergenId profileAllergenId = new ProfileAllergenId();
-                    profileAllergenId.setAllergenId(allergenId);
+                    profileAllergenId.setAllergenId(allergen.getAllergen_id());
                     profileAllergenId.setProfileId(allergyProfile.getProfile_id());
 
                     profileAllergen.setId(profileAllergenId);
-                    profileAllergen.setIntensity(dto.getIntensity());  // Corrected to use the intensity from the DTO
+                    profileAllergen.setIntensity(dto.getIntensity()); // Ustawienie globalnej intensywności
                     profileAllergen.setAllergen(allergen);
                     profileAllergen.setAllergyProfile(allergyProfile);
 
@@ -244,19 +248,22 @@ public class AllergyProfileService {
                 })
                 .collect(Collectors.toList());
 
-        allergyProfile.setProfileAllergens(profileAllergens);  // Set the allergens on the profile
+        // Ustawienie alergenów w profilu alergii
+        allergyProfile.setProfileAllergens(profileAllergens);
 
-        // Persist the AllergyProfile
+
+        // Zapisanie profilu alergii
         AllergyProfile savedProfile = allergyProfileRepository.save(allergyProfile);
 
-        // Save the account with the updated allergyProfile reference (to persist the foreign key)
-        persistedAccount.setAllergyProfile(savedProfile);  // Link the allergy profile back to the account
-        accountRepository.save(persistedAccount);  // Explicitly save the account again to persist the foreign key
+        // Aktualizacja konta z powiązanym profilem alergii
+        persistedAccount.setAllergyProfile(savedProfile);
+        accountRepository.save(persistedAccount);
 
         System.out.println("Profile successfully assigned with ID: " + savedProfile.getProfile_id());
 
         return savedProfile;
     }
+
 
 
 
