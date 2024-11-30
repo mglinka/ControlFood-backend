@@ -26,11 +26,19 @@ public class AllergenService {
     }
 
     public Allergen createAllergen(CreateAllergenDTO createAllergenDTO) {
+        System.out.println("Service");
         Allergen allergen = new Allergen();
         allergen.setName(createAllergenDTO.getName());
 
+        allergen.setType(createAllergenDTO.getType());
+
+        System.out.println("TU" + allergen.getType().name());
+        System.out.println("TUbb" + allergen.getType());
+
         return allergenRepository.save(allergen);
     }
+
+
 
     public void deleteAllergenById(UUID allergenId) {
         if (!allergenRepository.existsById(allergenId)) {
@@ -46,6 +54,7 @@ public class AllergenService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergen not found"));
 
         allergen.setName(updateAllergenDTO.getName());
+        allergen.setType(updateAllergenDTO.getType());
         allergenRepository.save(allergen);
         return allergen;
     }

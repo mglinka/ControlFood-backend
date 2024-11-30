@@ -1,0 +1,30 @@
+package com.project.mpa.controller;
+
+import com.project.mpa.dto.converter.ProductDTOConverter;
+import com.project.mpa.dto.product.GetCategoryDTO;
+import com.project.mpa.service.CategoryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/categories")
+public class CategoryController {
+
+
+    private final CategoryService categoryService;
+    private final ProductDTOConverter productDTOConverter;
+
+    @GetMapping
+    public List<GetCategoryDTO> getAllCategories(){
+        List<GetCategoryDTO> categoryDTOS = productDTOConverter.categoryDTOList(categoryService.getAllCategories());
+        return ResponseEntity.status(HttpStatus.OK).body(categoryDTOS).getBody();
+    }
+
+}

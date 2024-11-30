@@ -57,4 +57,7 @@ public class GetProductDTO {
 
     @NotNull
     private List<NutritionalValueDTO> nutritionalValueDTOS;
+
+    private GetCategoryDTO categoryDTO;
+
 }

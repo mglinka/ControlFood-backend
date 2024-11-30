@@ -44,14 +44,21 @@ public class AllergyProfileController {
     }
     @GetMapping("/byAccount/{id}")
     public ResponseEntity<GetAllergyProfileDTO> getAllergyProfileByAccountId(@PathVariable UUID id) {
+        System.out.println("Controller");
         AllergyProfile allergyProfile = allergyProfileService.getAllergyProfileByAccountId(id);
 
+        GetAllergyProfileDTO getAllergyProfileDTO = allergyProfileDTOConverter.toAllergyProfileDTO(allergyProfile);
 
-        String eTag = ETagBuilder.buildETag(allergyProfile.getVersion().toString());
-
+//        String eTag = ETagBuilder.buildETag(allergyProfile.getVersion().toString());
+        System.out.println("po control"+getAllergyProfileDTO);
+        System.out.println("po control"+getAllergyProfileDTO.getAllergens().get(0).getType());
+        System.out.println("po control"+getAllergyProfileDTO.getAllergens().get(0).getAllergen_id());
+        System.out.println("po control"+getAllergyProfileDTO.getAllergens().get(0).getName());
+        System.out.println("po control"+getAllergyProfileDTO.getAllergens().get(0).getIntensity());
+        System.out.println("po control"+getAllergyProfileDTO.getProfile_id());
         return ResponseEntity.status(HttpStatus.OK)
-                .header(HttpHeaders.ETAG, eTag)
-                .body(allergyProfileDTOConverter.toAllergyProfileDTO(allergyProfile));
+//                .header(HttpHeaders.ETAG, eTag)
+                .body(getAllergyProfileDTO);
     }
 
 

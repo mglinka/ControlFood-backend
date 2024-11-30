@@ -1,5 +1,6 @@
 package com.project.mpa.controller;
 
+import com.project.mpa.dto.AllergenIntensityDTO;
 import com.project.mpa.dto.GetAllergenDTO;
 import com.project.mpa.dto.converter.AllergenDTOConverter;
 import com.project.mpa.dto.CreateAllergenDTO;
@@ -29,11 +30,13 @@ public class AllergenController {
     @GetMapping
     public List<GetAllergenDTO> getAllAllergens() {
         List<GetAllergenDTO> getAllergenDTOS = allergenDTOConverter.allergenDTOList(allergenService.getAllAllergens());
+
         return ResponseEntity.status(HttpStatus.OK).body(getAllergenDTOS).getBody();
     }
 
     @PostMapping("/add")
     public ResponseEntity<GetAllergenDTO> addAllergen(@Valid @RequestBody CreateAllergenDTO createAllergenDTO) {
+        System.out.println("Controller");
         Allergen allergen = allergenService.createAllergen(createAllergenDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(allergenDTOConverter.toAllergenDTO(allergen));

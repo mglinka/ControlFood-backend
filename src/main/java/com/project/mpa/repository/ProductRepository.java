@@ -18,4 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("SELECT p FROM Product p JOIN p.label l WHERE lower(p.productName) LIKE lower(CONCAT('%', :query, '%')) ORDER BY p.productName ASC")
     List<Product> findAllProductsWithLabels(Pageable pageable, @Param("query") String query);
 
+    List<Product> findByCategoryId(UUID category_id);
+
+
 }

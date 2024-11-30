@@ -34,10 +34,16 @@ public class ProductDTOConverter {
     private final FlavourRepository flavourRepository;
     private final ProductIndexRepository productIndexRepository;
     private final RatingRepository ratingRepository;
+    private final CategoryRepository categoryRepository;
 
     public GetProductDTO toProductDTO(Product product) {
         GetProductDTO dto = modelMapper.map(product, GetProductDTO.class);
 
+        GetCategoryDTO getCategoryDTO = new GetCategoryDTO();
+        getCategoryDTO.setName(product.getCategory().getName());
+        getCategoryDTO.setId(product.getCategory().getId());
+
+        dto.setCategoryDTO(getCategoryDTO);
         // Map Label
         if (product.getLabel() != null) {
             Label label = product.getLabel();
@@ -126,6 +132,9 @@ public class ProductDTOConverter {
         return dto;
     }
 
+    public GetCategoryDTO toCategoryDTO (Category category){
+        return modelMapper.map(category, GetCategoryDTO.class);
+    }
 
     public UnitDTO toUnitDTO(Unit unit){
         return modelMapper.map(unit, UnitDTO.class);
@@ -161,6 +170,11 @@ public class ProductDTOConverter {
         return nutritionalValueGroups.stream().map(this::toNutritionalValueGroupDTO).collect(Collectors.toList());
     }
 
+    public List<GetCategoryDTO> categoryDTOList (List<Category> categories){
+        return categories.stream().map(this::toCategoryDTO).collect(Collectors.toList());
+    }
+
+
     @Transactional
     public Product toProduct(CreateProductDTO createProductDTO) {
         Product product = modelMapper.map(createProductDTO, Product.class);
@@ -179,6 +193,8 @@ public class ProductDTOConverter {
 
         return productRepository.saveAndFlush(product);
     }
+
+
 
     private Composition saveAndSetComposition(CompositionDTO compositionDTO) {
         Composition composition = modelMapper.map(compositionDTO, Composition.class);
@@ -268,5 +284,7 @@ public class ProductDTOConverter {
                 .map(this.ratingRepository::saveAndFlush)
                 .collect(Collectors.toSet());
     }
+
+
 
 }

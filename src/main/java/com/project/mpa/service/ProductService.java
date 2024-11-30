@@ -17,6 +17,7 @@ import java.util.*;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final LabelRepository labelRepository;
     private final ProductDTOConverter productDTOConverter;
 
@@ -42,6 +43,12 @@ public class ProductService {
     public List<Product> getAllProductsWithLabels(int page, int size, String query) {
         Pageable pageable = PageRequest.of(page, size);
         return productRepository.findAllProductsWithLabels(pageable, query);
+
+    }
+
+    public List<Product> getAllProductsByCategoryName(String categoryName){
+        Category category = categoryRepository.getCategoryByName(categoryName);
+        return productRepository.findByCategoryId(category.getId());
     }
 
 }

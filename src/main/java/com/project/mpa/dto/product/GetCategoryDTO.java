@@ -1,13 +1,14 @@
 package com.project.mpa.dto.product;
 
-import com.project.mpa.entity.allergy.AllergenType;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 
 @Data
-public class UpdateAllergenDTO {
+@RequiredArgsConstructor
+public class GetCategoryDTO {
 
+    private UUID id;
     private String name;
-    private AllergenType type;
 }

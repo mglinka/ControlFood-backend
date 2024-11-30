@@ -20,6 +20,10 @@ public class Product extends AbstractEntity {
     private String ean;
 
     @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne
     private Producer producer;
 
     @Column(name = "product_name", nullable = false)

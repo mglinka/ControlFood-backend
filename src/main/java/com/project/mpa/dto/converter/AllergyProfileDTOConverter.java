@@ -64,6 +64,7 @@ public class AllergyProfileDTOConverter {
                 .allergen_id(allergen.getAllergen_id()) // Assuming Allergen has a method to get ID
                 .name(allergen.getName()) // Assuming Allergen has a method to get name
                 .intensity(intensity) // Map intensity from ProfileAllergen
+                .type(allergen.getType())
                 .build();
     }
 

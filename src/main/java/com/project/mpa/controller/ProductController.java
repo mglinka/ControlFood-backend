@@ -73,6 +73,13 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(getProductDTOS).getBody();
     }
 
+    @GetMapping("/category")
+    public ResponseEntity<List<GetProductDTO>> getProductsByCategory(@RequestParam String categoryName) {
+        List<GetProductDTO> productDTOList = productDTOConverter.productDTOList(productService.getAllProductsByCategoryName(categoryName));
+        return ResponseEntity.ok(productDTOList);
+    }
+
+
 
 
 

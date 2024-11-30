@@ -178,6 +178,7 @@ public class AllergyProfileService {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
+        System.out.println("Service");
         AllergyProfile allergyProfile = account.getAllergyProfile();
         if (allergyProfile == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Allergy Profile not found for this account");
