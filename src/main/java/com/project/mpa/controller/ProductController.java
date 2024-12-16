@@ -79,6 +79,15 @@ public class ProductController {
         return ResponseEntity.ok(productDTOList);
     }
 
+    @GetMapping("/withoutPagination")
+    public List<GetProductDTO> getAllProductsWithoutPagination() {
+        List<GetProductDTO> getProductDTOS = productDTOConverter.productDTOList(productService.getAllProductsWithoutPagination());
+        return ResponseEntity.status(HttpStatus.OK).body(getProductDTOS).getBody();
+    }
+
+
+
+
 
 
 

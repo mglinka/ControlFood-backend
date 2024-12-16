@@ -51,4 +51,7 @@ public class ProductService {
         return productRepository.findByCategoryId(category.getId());
     }
 
+    public List<Product> getAllProductsWithoutPagination() {
+        return productRepository.findAll();
+    }
 }

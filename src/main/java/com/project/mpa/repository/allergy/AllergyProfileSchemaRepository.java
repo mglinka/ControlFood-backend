@@ -1,10 +1,15 @@
 package com.project.mpa.repository.allergy;
 
+import com.project.mpa.entity.allergy.AllergyProfileSchema;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface AllergyProfileSchemaRepository extends JpaRepository<com.project.mpa.entity.allergy.AllergyProfileSchema, UUID> {
+
+    Optional<AllergyProfileSchema> findByName(String name);
+
 }
