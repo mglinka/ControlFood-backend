@@ -10,8 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.xml.transform.SourceLocator;
 
@@ -57,6 +60,25 @@ public class AuthenticationController {
     public ResponseEntity<String> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return ResponseEntity.status(HttpStatus.OK).body(service.refreshJWT(token));
     }
+
+    @PostMapping("/google/redirect")
+    public ResponseEntity<AuthenticationResponse> googleLogin(@RequestBody String idToken) {
+
+        System.out.println("Bartek"+ idToken);
+
+        AuthenticationResponse response = service.authenticateWithGoogle(idToken);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/amazon/redirect")
+    public ResponseEntity<AuthenticationResponse> amazonLogin(@RequestBody String token) {
+
+        System.out.println("Bartek"+ token);
+        AuthenticationResponse response = service.authenticateWithAmazon(token);
+        return ResponseEntity.ok(response);
+    }
+
 
 
 

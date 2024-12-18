@@ -4,8 +4,16 @@ spring:
     username: postgres
     password: password
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 905964972839-drfppduor08qo3hllqf2uatj81nbfvmb.apps.googleusercontent.com
+            clientSecret: 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
+            scope: profile, email
+            authorizationGrantType: authorization_code
+            clientName: Google
 server:
   port: 8080
-
-
 

@@ -1,13 +1,21 @@
 package com.project.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.project.dto.auth.AuthenticationRequest;
 import com.project.dto.auth.AuthenticationResponse;
 import com.project.dto.auth.RegisterRequest;
 import com.project.entity.Account;
 import com.project.entity.AccountConfirmation;
 import com.project.entity.JWTWhitelistToken;
-import com.project.repository.AccountConfirmationRepository;
 import com.project.mok.repository.AccountRepository;
+import com.project.repository.AccountConfirmationRepository;
 import com.project.repository.JWTWhitelistRepository;
 import com.project.repository.RoleRepository;
 import com.project.security.JwtService;
@@ -16,6 +24,7 @@ import com.project.utils.TokenGenerator;
 import com.project.utils._enum.AccountRoleEnum;
 import com.project.utils.mail.MailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,8 +34,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import static com.project.utils.Utils.calculateExpirationDate;
 
@@ -45,6 +62,22 @@ public class AuthenticationService {
 
     private final AccountConfirmationRepository accountConfirmationRepository;
     private final JWTWhitelistRepository jwtWhitelistRepository;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String googleClientId;
+
+    @Value("${spring.security.oauth2.client.registration.amazon.client-id}")
+    private String amazonClientId;
+
+    private static final String AMAZON_TOKEN_INFO_URL = "https://api.amazon.com/auth/o2/tokeninfo";
+    private static final String AMAZON_PROFILE_URL = "https://api.amazon.com/user/profile";
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+
+
+
+
 
     public AuthenticationResponse register (RegisterRequest request){
 
@@ -150,6 +183,149 @@ public class AuthenticationService {
 
         return jwtService.generateToken(new HashMap<>(), account);
     }
+
+
+
+    public AuthenticationResponse authenticateWithGoogle(String idToken) {
+        try {
+            System.out.println("BartekFirst"+googleClientId);
+            HttpTransport transport = new NetHttpTransport();
+
+
+            JsonFactory jsonFactory = new GsonFactory();
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+                    .setAudience(Collections.singletonList(this.googleClientId))
+                    .build();
+
+            idToken = idToken.trim().replace("\"", "");
+            System.out.println("Bartek1"+idToken);
+
+            GoogleIdToken token = verifier.verify(idToken);
+            System.out.println("Bartek2"+token);
+            if (token == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid ID Token");
+            }
+
+            GoogleIdToken.Payload payload = token.getPayload();
+            String email = payload.getEmail();
+            String name = (String) payload.get("name");
+
+            Account account = repository.findByEmail(email).orElse(null);
+
+            if (account == null) {
+                account = Account.builder()
+                        .email(email)
+                        .firstName(name)
+                        .enabled(true)
+                        .build();
+                repository.save(account);
+            }
+
+            String jwtToken = jwtService.generateToken(new HashMap<>(), account);
+
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .build();
+
+        } catch (GeneralSecurityException | IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error verifying token", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error occurred during Google authentication", e);
+        }
+    }
+
+
+
+        public AuthenticationResponse authenticateWithAmazon(String accessToken) {
+            try {
+                accessToken = accessToken.trim().replace("\"", "");
+                // Step 1: Validate the access token
+                String tokenInfoUrl = AMAZON_TOKEN_INFO_URL + "?access_token=" +
+                        java.net.URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
+
+
+                Map<String, Object> tokenInfo = sendGetRequest(tokenInfoUrl);
+
+                if (!amazonClientId.equals(tokenInfo.get("aud"))) {
+                    throw new IllegalArgumentException("Invalid token: The token does not belong to this client.");
+                }
+
+                // Step 2: Fetch user profile
+                Map<String, Object> userProfile = sendAuthorizedGetRequest(AMAZON_PROFILE_URL, accessToken);
+
+                System.out.println("Barr"+userProfile);
+                String email = userProfile.get("email").toString();
+                String name = userProfile.get("name").toString();
+                Account account = repository.findByEmail(email).orElse(null);
+
+                if (account == null) {
+                    account = Account.builder()
+                            .email(email)
+                            .firstName(name)
+                            .enabled(true)
+                            .build();
+                    repository.save(account);
+                }
+                String jwtToken = jwtService.generateToken(new HashMap<>(), account);
+
+                return AuthenticationResponse.builder()
+                        .token(jwtToken)
+                        .build();
+
+            } catch (Exception e) {
+                throw new RuntimeException("Authentication with Amazon failed", e);
+            }
+
+
+        }
+
+        private Map<String, Object> sendGetRequest(String url) throws Exception {
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "application/json");
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != 200) {
+                throw new RuntimeException("Failed: HTTP error code : " + responseCode);
+            }
+
+            String jsonResponse = readResponse(connection);
+            return parseJson(jsonResponse);
+        }
+
+        private Map<String, Object> sendAuthorizedGetRequest(String url, String accessToken) throws Exception {
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != 200) {
+                throw new RuntimeException("Failed: HTTP error code : " + responseCode);
+            }
+
+            String jsonResponse = readResponse(connection);
+            return parseJson(jsonResponse);
+        }
+
+        private String readResponse(HttpURLConnection connection) throws Exception {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    response.append(line);
+                }
+                return response.toString();
+            }
+        }
+
+        private Map<String, Object> parseJson(String json) {
+            try {
+                return objectMapper.readValue(json, new TypeReference<>() {});
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed to parse JSON response", ex);
+            }
+        }
 
 
 }

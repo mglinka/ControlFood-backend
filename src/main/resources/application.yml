@@ -1,3 +1,4 @@
+---
 spring:
   datasource:
     url: jdbc:postgresql://controlfood-db.postgres.database.azure.com:5432/postgres
@@ -12,36 +13,49 @@ spring:
       hibernate:
         format_sql: true
     database: postgresql
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 905964972839-drfppduor08qo3hllqf2uatj81nbfvmb.apps.googleusercontent.com
+            client-secret: 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
+            scope: profile, email
+            authorization-grant-type: authorization_code
+            client-name: Google
+          amazon:
+            client-id: amzn1.application-oa2-client.70cb54ea58c6464c9fda2b5ab7693e9e
+            client-secret: amzn1.oa2-cs.v1.0936cfd07cfffc5925854649066ff7773eb3881fe55e0a1d21fea3a82905aa9f
+            authorization-grant-type: authorization_code
+            scope: profile, email
+            client-name: Amazon
+            provider: amazon-provider
+            redirect-uri: http://localhost:8080/api/v1/auth/amazon/redirect
+        provider:
+          amazon-provider:
+            authorization-uri: https://www.amazon.com/ap/oa
+            token-uri: https://api.amazon.com/auth/o2/token
+            user-info-uri: https://api.amazon.com/user/profile
+            user-name-attribute: email
 
 
-
-
-  flyway: #flyway automatically uses the datasource from the application to connect to the DBs
-    enabled: true # enables flyway database migration
-    locations: classpath:/migration # the location where flyway should look for migration scripts
+  flyway:
+    enabled: true
+    locations: classpath:/migration
     validate-on-migrate: true
     baseline-on-migrate: true
     baseline-version: 0.0.0
-
-  #    default-schema: postgresql
-
-
-
   mail:
     host: smtp.gmail.com
     port: 587
     username: marta.glinka2002@gmail.com
     password: srdl ljqj gdeb rjik
     properties:
-        mail.smtp.auth: true
-        mail.smtp.starttls.enable: true
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
     transfer:
       protocol: smtp
-
 app:
   url: http://localhost:5173
-
-
 server:
   port: 80
-
