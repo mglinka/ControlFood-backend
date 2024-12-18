@@ -33,9 +33,7 @@ public class MeService {
             Principal connectedUser) {
         var account = (Account) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
-        if (!passwordEncoder.matches(request.getCurrentPassword(), account.getPassword())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong password");
-        }
+
         if(!request.getNewPassword().equals((request.getConfirmationPassword()))){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passwords are not the same");
         }

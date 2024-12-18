@@ -14,11 +14,13 @@ import com.project.dto.auth.RegisterRequest;
 import com.project.entity.Account;
 import com.project.entity.AccountConfirmation;
 import com.project.entity.JWTWhitelistToken;
+import com.project.entity.Role;
 import com.project.mok.repository.AccountRepository;
 import com.project.repository.AccountConfirmationRepository;
 import com.project.repository.JWTWhitelistRepository;
 import com.project.repository.RoleRepository;
 import com.project.security.JwtService;
+import com.project.utils.RandomPasswordGenerator;
 import com.project.utils.RunAs;
 import com.project.utils.TokenGenerator;
 import com.project.utils._enum.AccountRoleEnum;
@@ -62,6 +64,8 @@ public class AuthenticationService {
 
     private final AccountConfirmationRepository accountConfirmationRepository;
     private final JWTWhitelistRepository jwtWhitelistRepository;
+
+
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String googleClientId;
@@ -208,18 +212,30 @@ public class AuthenticationService {
 
             GoogleIdToken.Payload payload = token.getPayload();
             String email = payload.getEmail();
-            String name = (String) payload.get("name");
+            String firstName = (String) payload.get("given_name");
+            String lastName = (String) payload.get("family_name");
 
             Account account = repository.findByEmail(email).orElse(null);
 
+            Role role = roleRepository.findByName(AccountRoleEnum.ROLE_USER)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
+
+
+            String password = passwordEncoder.encode(RandomPasswordGenerator.generateRandomPassword(16));
+            System.out.println("Patryk"+ "przed kontem");
             if (account == null) {
                 account = Account.builder()
                         .email(email)
-                        .firstName(name)
+                        .firstName(firstName)
+                        .lastName(lastName)
+                        .password(password)
+                        .role(role)
                         .enabled(true)
                         .build();
                 repository.save(account);
             }
+
+
 
             String jwtToken = jwtService.generateToken(new HashMap<>(), account);
 
@@ -257,15 +273,37 @@ public class AuthenticationService {
                 String email = userProfile.get("email").toString();
                 String name = userProfile.get("name").toString();
                 Account account = repository.findByEmail(email).orElse(null);
+                Role role = roleRepository.findByName(AccountRoleEnum.ROLE_USER)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
+
+
+                String password = passwordEncoder.encode(RandomPasswordGenerator.generateRandomPassword(16));
+
 
                 if (account == null) {
-                    account = Account.builder()
-                            .email(email)
-                            .firstName(name)
-                            .enabled(true)
-                            .build();
-                    repository.save(account);
+                    // Sprawdzenie, czy email i name nie są null
+                    if (email != null && name != null && !name.trim().isEmpty()) {
+                        // Rozdzielanie name na części, upewniając się, że jest co najmniej jedno słowo
+                        String[] nameParts = name.split("\\s+"); // używamy regex \\s+ dla większej elastyczności
+                        String firstName = nameParts.length > 0 ? nameParts[0] : ""; // Pierwsze imię
+                        String lastName = nameParts.length > 1 ? nameParts[1] : ""; // Drugie słowo jako nazwisko (lub puste, jeśli brak)
+
+                        account = Account.builder()
+                                .email(email)
+                                .firstName(firstName)
+                                .lastName(lastName) // Ustawienie nazwiska
+                                .enabled(true)
+                                .password(password)
+                                .role(role)
+                                .build();
+                        repository.save(account);
+                    } else {
+                        // Obsługuje przypadek, gdy email lub name są null lub nieprawidłowe
+                        throw new IllegalArgumentException("Email and name must not be null or empty");
+                    }
                 }
+
+
                 String jwtToken = jwtService.generateToken(new HashMap<>(), account);
 
                 return AuthenticationResponse.builder()

@@ -80,9 +80,7 @@ public class AccountService {
         var account = (Account) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
 
-        if (!passwordEncoder.matches(request.getCurrentPassword(), account.getPassword())) {
-            throw new IllegalStateException("Wrong password");
-        }
+
 
         if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
             throw new IllegalStateException("Password are not the same");

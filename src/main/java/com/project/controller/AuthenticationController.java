@@ -74,6 +74,7 @@ public class AuthenticationController {
     @PostMapping("/amazon/redirect")
     public ResponseEntity<AuthenticationResponse> amazonLogin(@RequestBody String token) {
 
+
         System.out.println("Bartek"+ token);
         AuthenticationResponse response = service.authenticateWithAmazon(token);
         return ResponseEntity.ok(response);
