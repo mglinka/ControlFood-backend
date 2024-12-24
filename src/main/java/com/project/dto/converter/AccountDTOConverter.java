@@ -1,6 +1,5 @@
 package com.project.dto.converter;
 
-import com.project.dto.CreateAccountDTO;
 import com.project.dto.account.GetAccountDTO;
 import com.project.dto.account.GetAccountPersonalDTO;
 import com.project.dto.account.RoleDTO;
@@ -9,7 +8,6 @@ import com.project.entity.Account;
 import com.project.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,11 +28,7 @@ public class AccountDTOConverter {
         return roles.stream().map(this::toRoleDTO).toList();
     }
 
-    public Account toAccount(CreateAccountDTO createAccountDTO) {
-        return modelMapper.map(createAccountDTO, Account.class);
 
-
-    }
 
     public Account toAccount(UpdateAccountDataDTO updateAccountDataDTO) {
         return modelMapper.map(updateAccountDataDTO, Account.class);

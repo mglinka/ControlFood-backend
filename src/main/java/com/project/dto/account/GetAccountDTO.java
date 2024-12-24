@@ -1,6 +1,5 @@
 package com.project.dto.account;
 
-import com.project.entity.Role;
 import lombok.Data;
 
 import java.util.UUID;
@@ -9,11 +8,8 @@ import java.util.UUID;
 public class GetAccountDTO {
 
     private UUID id;
-
     private String email;
-
     private String firstName;
-
     private String lastName;
     private String role;
     private Boolean enabled;

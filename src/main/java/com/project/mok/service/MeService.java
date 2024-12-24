@@ -3,9 +3,7 @@ package com.project.mok.service;
 import com.project.dto.password.RequestChangePassword;
 import com.project.dto.update.UpdateAccountDataDTO;
 import com.project.entity.Account;
-import com.project.mok.repository.AccountMokRepository;
 import com.project.mok.repository.AccountRepository;
-import com.project.utils.ETagBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,6 +43,7 @@ public class MeService {
 
     }
 
+    @Transactional
     public Account updateInfo(UpdateAccountDataDTO accountData) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -55,15 +54,9 @@ public class MeService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
 
-
-        System.out.println(accountData.getFirstName());
         accountToUpdate.setFirstName(accountData.getFirstName());
-        System.out.println(accountToUpdate.getFirstName());
 
-        System.out.println(accountData.getLastName());
         accountToUpdate.setLastName(accountData.getLastName());
-        System.out.println(accountToUpdate.getLastName());
-
 
         return accountRepository.saveAndFlush(accountToUpdate);
 

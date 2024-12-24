@@ -4,9 +4,8 @@ import com.project.dto.password.RequestChangePassword;
 import com.project.entity.Account;
 import com.project.entity.Role;
 import com.project.mok.repository.AccountRepository;
-import com.project.repository.RoleRepository;
+import com.project.auth.repository.RoleRepository;
 import com.project.utils.ETagBuilder;
-import com.project.utils._enum.AccountRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,12 +33,11 @@ public class AccountService {
         return repository.findAll();
     }
 
+
     public Account getAccountById(UUID id) {
 
-        final Account account = repository.findById(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
-
-        return account;
     }
 
     public void deleteAccount(UUID id) {
@@ -47,6 +45,7 @@ public class AccountService {
         repository.delete(getAccountById(id));
     }
 
+    @Transactional
     public Account updateMyAccountData(Account accountData, String eTag) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -61,38 +60,27 @@ public class AccountService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Optimistic lock exception");
         }
 
-        System.out.println(accountData.getFirstName());
         accountToUpdate.setFirstName(accountData.getFirstName());
-        System.out.println(accountToUpdate.getFirstName());
-
-        System.out.println(accountData.getLastName());
         accountToUpdate.setLastName(accountData.getLastName());
-        System.out.println(accountToUpdate.getLastName());
-
-        var returnedAccount = repository.saveAndFlush(accountToUpdate);
 
 
-        return returnedAccount;
+        return repository.saveAndFlush(accountToUpdate);
     }
 
+    @Transactional
     public void changePassword(RequestChangePassword request, Principal connectedUser) {
 
         var account = (Account) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
-
-
-
 
         if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
             throw new IllegalStateException("Password are not the same");
         }
 
-
         account.setPassword(passwordEncoder.encode(request.getNewPassword()));
-
-
         repository.save(account);
     }
 
+    @Transactional
     public void changeRole (UUID accountId, UUID roleId) {
         Account account = repository.findById(accountId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
@@ -100,12 +88,10 @@ public class AccountService {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
 
-        // Check if the account already has the role
         if(account.getRole() != null && account.getRole().equals(role)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account already has this access level");
         }
 
-        // Set the new role and save the account
         account.setRole(role);
         repository.save(account);
     }

@@ -4,7 +4,7 @@ import com.project.config.ConfigurationProperties;
 import com.project.config.KeyGenerator;
 import com.project.entity.Account;
 import com.project.entity.JWTWhitelistToken;
-import com.project.repository.JWTWhitelistRepository;
+import com.project.auth.repository.JWTWhitelistRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

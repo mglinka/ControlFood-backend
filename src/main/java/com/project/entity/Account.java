@@ -1,10 +1,9 @@
 package com.project.entity;
 
-import com.project.mpa.entity.allergy.AllergyProfile;
+import com.project.mopa.entity.allergy.AllergyProfile;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;

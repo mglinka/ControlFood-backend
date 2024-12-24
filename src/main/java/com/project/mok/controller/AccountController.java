@@ -7,24 +7,23 @@ import com.project.dto.password.RequestChangePassword;
 import com.project.dto.converter.AccountDTOConverter;
 import com.project.dto.update.UpdateAccountDataDTO;
 import com.project.entity.Account;
-import com.project.entity.Role;
 import com.project.mok.service.AccountService;
 import com.project.utils.ETagBuilder;
-import com.project.utils._enum.AccountRoleEnum;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -73,7 +72,7 @@ public class AccountController {
 
     @PatchMapping("/account/changePassword")
     public ResponseEntity<?> changePassword(
-            @RequestBody RequestChangePassword request,
+            @Valid @RequestBody RequestChangePassword request,
             Principal connectedUser
     ) {
         service.changePassword(request, connectedUser);

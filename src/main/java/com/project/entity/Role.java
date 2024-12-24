@@ -21,8 +21,6 @@ import org.springframework.security.core.GrantedAuthority;
 @Entity
 public class Role extends AbstractEntity implements GrantedAuthority {
     @Column(nullable = false, unique = true, updatable = false, length = 32)
-    //@NotBlank(message = ExceptionMessages.INCORRECT_ROLE_NAME)
-    //@Size(max = 32, message = ExceptionMessages.INCORRECT_ROLE_NAME)
     @Enumerated(EnumType.STRING)
     private AccountRoleEnum name;
 

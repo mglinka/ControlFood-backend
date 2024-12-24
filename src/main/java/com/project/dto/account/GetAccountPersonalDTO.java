@@ -1,10 +1,8 @@
 package com.project.dto.account;
 
 import com.project.entity.Role;
-import com.project.utils._enum.AccountRoleEnum;
 import lombok.Data;
 
-import java.util.List;
 import java.util.UUID;
 
 @Data
