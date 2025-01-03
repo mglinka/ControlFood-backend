@@ -1,5 +1,6 @@
 package com.project.auth.controller;
 
+import com.project.aspects.LoggerInterceptor;
 import com.project.auth.service.AuthenticationService;
 import com.project.auth.dto.AuthenticationRequest;
 import com.project.auth.dto.AuthenticationResponse;
@@ -29,6 +30,7 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @LoggerInterceptor
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate (@Valid @RequestBody AuthenticationRequest request){
         return ResponseEntity.ok(service.authenticate(request));

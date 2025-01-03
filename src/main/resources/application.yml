@@ -64,6 +64,6 @@ server:
 logging:
   level:
     root: info
-    com.zaxxer.hikari: debug
+#    com.zaxxer.hikari: debug
   file:
     name: loggerFile.log
