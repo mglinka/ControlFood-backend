@@ -1,4 +1,4 @@
-package com.project.mopa.entity.allergy;
+package com.project.entity.allergy;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,7 +28,7 @@ public class AllergyProfileSchema {
     @Column(nullable = false) // Optional: Ensures the name cannot be null
     private String name;
 
-    @ManyToMany // Assuming an AllergyProfileSchema can have multiple allergens and vice versa
+    @ManyToMany(fetch = FetchType.EAGER) // Assuming an AllergyProfileSchema can have multiple allergens and vice versa
     @JoinTable(
             name = "allergy_profile_schema_allergen", // Join table name
             joinColumns = @JoinColumn(name = "schema_id"), // FK in join table referencing AllergyProfileSchema

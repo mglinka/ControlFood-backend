@@ -3,7 +3,7 @@ package com.project.mopa.dto.converter;
 
 import com.project.mopa.dto.GetAllergenDTO;
 import com.project.mopa.dto.GetAllergenIntensityDTO;
-import com.project.mopa.entity.allergy.Allergen;
+import com.project.entity.allergy.Allergen;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

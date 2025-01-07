@@ -1,4 +1,4 @@
-package com.project.mopa.entity.allergy;
+package com.project.entity.allergy;
 
 import com.project.entity.Account;
 import jakarta.persistence.*;

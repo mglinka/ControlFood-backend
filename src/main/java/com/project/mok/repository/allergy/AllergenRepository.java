@@ -1,6 +1,6 @@
-package com.project.mopa.repository.allergy;
+package com.project.mok.repository.allergy;
 
-import com.project.mopa.entity.allergy.Allergen;
+import com.project.entity.allergy.Allergen;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

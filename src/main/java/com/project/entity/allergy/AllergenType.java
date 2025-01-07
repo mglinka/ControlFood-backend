@@ -1,4 +1,4 @@
-package com.project.mopa.entity.allergy;
+package com.project.entity.allergy;
 
 public enum AllergenType {
     ALLERGEN,

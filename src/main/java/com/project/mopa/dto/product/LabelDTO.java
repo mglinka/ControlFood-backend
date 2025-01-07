@@ -27,4 +27,16 @@ public class LabelDTO {
     @Size(max = 255, message = "Allergens information must be 255 characters or less")
     private String allergens;
     private String image;
+
+    @Override
+    public String toString() {
+        return "LabelDTO{" +
+                "storage='" + storage + '\'' +
+                ", durability='" + durability + '\'' +
+                ", instructionsAfterOpening='" + instructionsAfterOpening + '\'' +
+                ", preparation='" + preparation + '\'' +
+                ", allergens='" + allergens + '\'' +
+//                ", image='" + image + '\'' +
+                '}';
+    }
 }

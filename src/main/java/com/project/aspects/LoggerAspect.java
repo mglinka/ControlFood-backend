@@ -1,6 +1,7 @@
 package com.project.aspects;
 
 import com.project.auth.dto.AuthenticationRequest;
+import com.project.utils.TransactionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Component;
 import com.project.utils._enum.AccountRoleEnum;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Aspect
@@ -21,83 +24,75 @@ import java.util.List;
 @Component
 public class LoggerAspect {
 
-
-    @Pointcut(value = "@annotation(com.project.aspects.LoggerInterceptor) || " +
-            "@within(com.project.aspects.LoggerInterceptor)")
+    @Pointcut("execution(* com.project.auth.controller..*(..)) || " +
+            "execution(* com.project.mok.controller..*(..)) || " +
+            "execution(* com.project.mopa.controller..*(..))")
     private void loggingInterceptorPointcut() {}
 
+    @Around("loggingInterceptorPointcut()")
+    public Object methodLoggerAdvice(ProceedingJoinPoint point) throws Throwable {
+        String transactionId = UUID.randomUUID().toString();
+        TransactionContext.setTransactionId(transactionId);
 
-    @Around(value = "loggingInterceptorPointcut()")
-    private Object methodLoggerAdvice(ProceedingJoinPoint point) throws Throwable {
-        StringBuilder stringBuilder = new StringBuilder("Method: ");
-        Object result;
+//        log.info("Transaction start");
+
+        String methodName = point.getSignature().getName();
+        String className = point.getTarget().getClass().getSimpleName();
+        StringBuilder logMessage = new StringBuilder();
+
         try {
-            try {
-                String callerIdentity = "Anonymous";
-                List<String> callerRoleList = List.of(AccountRoleEnum.ROLE_ANONYMOUS.name());
+            String callerIdentity = getCallerIdentity();
+            List<String> callerRoles = getCallerRoles();
 
-                if (SecurityContextHolder.getContext().getAuthentication() != null) {
-                    Authentication authenticationObj = SecurityContextHolder.getContext().getAuthentication();
-                    callerIdentity = authenticationObj.getName();
-                    callerRoleList = authenticationObj.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-                }
+            logMessage.append("Method: ").append(methodName)
+                    .append(" | Class: ").append(className)
+                    .append(" | Invoked by: ").append(callerIdentity)
+                    .append(" | Roles: ").append(callerRoles)
+                    .append(" | Parameters: ").append(getParametersLog(point.getArgs()));
 
-                stringBuilder.append(point.getSignature().getName())
-                        .append(" | Class: ")
-                        .append(point.getTarget().getClass().getSimpleName())
-                        .append('\n')
-                        .append("Invoked by user authenticated as: ")
-                        .append(callerIdentity)
-                        .append(" | List of users levels: ")
-                        .append(callerRoleList)
-                        .append('\n');
+            log.info(logMessage.toString());
 
-                stringBuilder.append("List of parameters: ")
-                        .append("[ ");
-                for (Object parameter : point.getArgs()) {
-                    // Maskowanie hasła w przypadku obiektu AuthenticationRequest
-                    if (parameter instanceof AuthenticationRequest) {
-                        AuthenticationRequest authRequest = (AuthenticationRequest) parameter;
-                        stringBuilder.append("email=").append(authRequest.getEmail())
-                                .append(", password=****"); // Maskujemy hasło
-                    } else {
-                        stringBuilder.append(parameter).append(": ").append(parameter != null ? parameter.getClass().getSimpleName() : "null");
-                    }
-                    // Upewnij się, że odpowiedni separator między parametrami
-                    if (!parameter.equals(point.getArgs()[point.getArgs().length - 1])) {
-                        stringBuilder.append(", ");
-                    }
-                }
-                stringBuilder.append(" ]").append('\n');
-            } catch (Exception exception) {
-                log.error("Exception: {} occurred while processing logger aspect message, since:  ", exception.getClass().getSimpleName(), exception.getCause());
-                throw exception;
-            }
+            Object result = point.proceed();
 
-            result = point.proceed();
+            log.info("Method returned: {} | Type: {}", result, result != null ? result.getClass().getSimpleName() : "void");
+            return result;
+
         } catch (Throwable throwable) {
-            stringBuilder.append("Exception: ")
-                    .append(throwable.getClass().getSimpleName())
-                    .append(" was thrown during method execution, since: ")
-                    .append(throwable.getMessage())
-                    .append(". Cause: ")
-                    .append(throwable.getCause());
-            log.error(stringBuilder.toString());
+            logMessage.append("Exception: ").append(throwable.getClass().getSimpleName())
+                    .append(" | Message: ").append(throwable.getMessage());
+            log.error(logMessage.toString(), throwable);
             throw throwable;
+
+        } finally {
+//            log.info("Transaction end");
+            TransactionContext.clear();
         }
-
-        if (result != null) {
-            stringBuilder.append(" Method returned value: ")
-                    .append(result)
-                    .append(" of type: ")
-                    .append(result.getClass().getSimpleName());
-        } else {
-            stringBuilder.append(" Method did not return any value.");
-        }
-
-        log.info(stringBuilder.toString());
-
-        return result;
     }
 
+    private String getCallerIdentity() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return (auth != null) ? auth.getName() : "Anonymous";
+    }
+
+    private List<String> getCallerRoles() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return (auth != null) ? auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList())
+                : List.of(AccountRoleEnum.ROLE_ANONYMOUS.name());
+    }
+
+    private String getParametersLog(Object[] args) {
+        if (args == null || args.length == 0) return "None";
+
+        return List.of(args).stream()
+                .map(arg -> {
+                    if (arg instanceof AuthenticationRequest) {
+                        AuthenticationRequest authRequest = (AuthenticationRequest) arg;
+                        return "AuthenticationRequest[email=" + authRequest.getEmail() + ", password=****]";
+                    }
+                    return (arg != null) ? arg + " (" + arg.getClass().getSimpleName() + ")" : "null";
+                })
+                .collect(Collectors.joining(", ", "[ ", " ]"));
+    }
 }

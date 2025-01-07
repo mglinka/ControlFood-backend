@@ -1,10 +1,10 @@
 package com.project.mopa.dto.converter;
 
 import com.project.mopa.dto.*;
-import com.project.mopa.entity.allergy.Allergen;
-import com.project.mopa.entity.allergy.AllergyProfile;
-import com.project.mopa.entity.allergy.AllergyProfileSchema;
-import com.project.mopa.entity.allergy.ProfileAllergen;
+import com.project.entity.allergy.Allergen;
+import com.project.entity.allergy.AllergyProfile;
+import com.project.entity.allergy.AllergyProfileSchema;
+import com.project.entity.allergy.ProfileAllergen;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

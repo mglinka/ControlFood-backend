@@ -1,6 +1,6 @@
 package com.project.entity;
 
-import com.project.mopa.entity.allergy.AllergyProfile;
+import com.project.entity.allergy.AllergyProfile;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;

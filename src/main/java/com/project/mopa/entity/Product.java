@@ -48,7 +48,7 @@ public class Product extends AbstractEntity {
     @OneToOne
     private Composition composition;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "product_nutritional_index",
             joinColumns = @JoinColumn(name = "product_id"),
@@ -56,7 +56,8 @@ public class Product extends AbstractEntity {
     )
     private Set<NutritionalIndex> nutritionalIndexes;
 
-    @ManyToMany@JoinTable(
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
             name = "product_product_index",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "productindexes_id")
@@ -70,7 +71,7 @@ public class Product extends AbstractEntity {
     @OneToOne
     private Portion portion;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "product_rating",
             joinColumns = @JoinColumn(name = "product_id"),
@@ -78,7 +79,7 @@ public class Product extends AbstractEntity {
     )
     private Set<Rating> ratings;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "product_nutritional_value",
             joinColumns = @JoinColumn(name = "product_id"),

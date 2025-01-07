@@ -1,6 +1,6 @@
 package com.project.mopa.dto.product;
 
-import com.project.mopa.entity.allergy.AllergenType;
+import com.project.entity.allergy.AllergenType;
 import lombok.Data;
 
 @Data

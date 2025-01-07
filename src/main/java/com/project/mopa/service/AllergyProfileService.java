@@ -1,14 +1,15 @@
 package com.project.mopa.service;
 
 
+
 import com.project.entity.Account;
+import com.project.entity.allergy.*;
 import com.project.mok.repository.AccountRepository;
 import com.project.mopa.dto.*;
-import com.project.mopa.entity.allergy.*;
-import com.project.mopa.repository.allergy.AllergenRepository;
-import com.project.mopa.repository.allergy.AllergyProfileRepository;
-import com.project.mopa.repository.allergy.AllergyProfileSchemaRepository;
-import com.project.mopa.repository.allergy.ProfileAllergenRepository;
+import com.project.mok.repository.allergy.AllergenRepository;
+import com.project.mok.repository.allergy.AllergyProfileRepository;
+import com.project.mok.repository.allergy.AllergyProfileSchemaRepository;
+import com.project.mok.repository.allergy.ProfileAllergenRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 

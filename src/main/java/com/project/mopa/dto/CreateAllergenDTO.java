@@ -1,6 +1,6 @@
 package com.project.mopa.dto;
 
-import com.project.mopa.entity.allergy.AllergenType;
+import com.project.entity.allergy.AllergenType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

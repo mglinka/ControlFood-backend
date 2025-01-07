@@ -33,6 +33,7 @@ public class ProductService {
     }
 
 
+
     public List<Product> getAllProducts() {
         Pageable pageable = PageRequest.of(0, 10);  // First page, 10 items
         return productRepository.findAll(pageable).getContent();  // Fetch the 10 items

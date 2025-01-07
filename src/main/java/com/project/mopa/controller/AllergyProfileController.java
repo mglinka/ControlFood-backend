@@ -1,10 +1,11 @@
 package com.project.mopa.controller;
 
+
 import com.project.entity.Account;
 import com.project.mok.repository.AccountRepository;
 import com.project.mopa.dto.*;
 import com.project.mopa.dto.converter.AllergyProfileDTOConverter;
-import com.project.mopa.entity.allergy.AllergyProfile;
+import com.project.entity.allergy.AllergyProfile;
 import com.project.mopa.service.AllergyProfileService;
 import com.project.utils.ETagBuilder;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
+
 
 
 @RestController

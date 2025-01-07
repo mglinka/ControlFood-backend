@@ -1,9 +1,27 @@
-spring:
+
+app:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    jdbc-url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: password
 
+  auth:
+    jdbc-url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: password
+  mok:
+    jdbc-url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: password
+  mopa:
+    jdbc-url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: password
+
+
+
+
+spring:
   security:
     oauth2:
       client:

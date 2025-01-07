@@ -1,10 +1,11 @@
 package com.project.mopa.controller;
 
+
 import com.project.mopa.dto.GetAllergenDTO;
 import com.project.mopa.dto.converter.AllergenDTOConverter;
 import com.project.mopa.dto.CreateAllergenDTO;
 import com.project.mopa.dto.product.UpdateAllergenDTO;
-import com.project.mopa.entity.allergy.Allergen;
+import com.project.entity.allergy.Allergen;
 import com.project.mopa.service.AllergenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
 
 @Validated
 @RestController

@@ -1,5 +1,6 @@
 package com.project.mopa.controller;
 
+
 import com.project.mopa.dto.CreateAllergyProfileSchemaDTO;
 import com.project.mopa.dto.GetAllergyProfileSchemaDTO;
 import com.project.mopa.dto.UpdateAllergyProfileSchemaDTO;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
 
 @RestController
 @RequiredArgsConstructor

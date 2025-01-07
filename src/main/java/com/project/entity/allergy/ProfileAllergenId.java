@@ -1,4 +1,4 @@
-package com.project.mopa.entity.allergy;
+package com.project.entity.allergy;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;

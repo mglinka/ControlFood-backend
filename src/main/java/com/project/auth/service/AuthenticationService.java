@@ -56,7 +56,7 @@ import static com.project.utils.Utils.calculateExpirationDate;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final AccountRepository repository;
+    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -91,7 +91,7 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
-        var savedAccount = repository.saveAndFlush(account);
+        var savedAccount = accountRepository.saveAndFlush(account);
         var randString = TokenGenerator.generateToken();
 
         var expirationHours = 24;
@@ -115,6 +115,7 @@ public class AuthenticationService {
     @Transactional
     public String authenticate (AuthenticationRequest request){
 
+        log.info("ELO");
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -126,10 +127,13 @@ public class AuthenticationService {
             throw new RuntimeException("Invalid login credentials", e);
         }
 
-        var account = repository.findByEmail(request.getEmail())
+        var account = accountRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Nie znaleziono konta"));
 
-        repository.saveAndFlush(account);
+        if (!account.getEnabled()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Konto jest zablokowane");
+        }
+        accountRepository.saveAndFlush(account);
         return jwtService.generateToken(new HashMap<>(), account);
 
     }
@@ -146,13 +150,13 @@ public class AuthenticationService {
         }
 
         var accountId = accountConfirmation.getAccount().getId();
-        var account = repository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+        var account = accountRepository.findById(accountId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
         account.setEnabled(true);
         account.setRole(roleRepository.findByName(AccountRoleEnum.ROLE_USER)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found")));
 
-        repository.saveAndFlush(account);
+        accountRepository.saveAndFlush(account);
 
         accountConfirmationRepository.delete(accountConfirmation);
 
@@ -195,7 +199,6 @@ public class AuthenticationService {
             System.out.println("Bartek1"+idToken);
 
             GoogleIdToken token = verifier.verify(idToken);
-            System.out.println("Bartek2"+token);
             if (token == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid ID Token");
             }
@@ -205,14 +208,13 @@ public class AuthenticationService {
             String firstName = (String) payload.get("given_name");
             String lastName = (String) payload.get("family_name");
 
-            Account account = repository.findByEmail(email).orElse(null);
+            Account account = accountRepository.findByEmail(email).orElse(null);
 
             Role role = roleRepository.findByName(AccountRoleEnum.ROLE_USER)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
 
 
             String password = passwordEncoder.encode(RandomPasswordGenerator.generateRandomPassword(16));
-            System.out.println("Patryk"+ "przed kontem");
             if (account == null) {
                 account = Account.builder()
                         .email(email)
@@ -222,7 +224,7 @@ public class AuthenticationService {
                         .role(role)
                         .enabled(true)
                         .build();
-                repository.save(account);
+                accountRepository.save(account);
             }
 
 
@@ -263,7 +265,7 @@ public class AuthenticationService {
                 System.out.println("Barr"+userProfile);
                 String email = userProfile.get("email").toString();
                 String name = userProfile.get("name").toString();
-                Account account = repository.findByEmail(email).orElse(null);
+                Account account = accountRepository.findByEmail(email).orElse(null);
                 Role role = roleRepository.findByName(AccountRoleEnum.ROLE_USER)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
 
@@ -272,9 +274,7 @@ public class AuthenticationService {
 
 
                 if (account == null) {
-                    // Sprawdzenie, czy email i name nie są null
                     if (email != null && name != null && !name.trim().isEmpty()) {
-                        // Rozdzielanie name na części, upewniając się, że jest co najmniej jedno słowo
                         String[] nameParts = name.split("\\s+"); // używamy regex \\s+ dla większej elastyczności
                         String firstName = nameParts.length > 0 ? nameParts[0] : ""; // Pierwsze imię
                         String lastName = nameParts.length > 1 ? nameParts[1] : ""; // Drugie słowo jako nazwisko (lub puste, jeśli brak)
@@ -287,7 +287,7 @@ public class AuthenticationService {
                                 .password(password)
                                 .role(role)
                                 .build();
-                        repository.save(account);
+                        accountRepository.save(account);
                     } else {
                         // Obsługuje przypadek, gdy email lub name są null lub nieprawidłowe
                         throw new IllegalArgumentException("Email and name must not be null or empty");

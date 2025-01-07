@@ -1,11 +1,12 @@
 package com.project.mopa.service;
 
+import com.project.entity.allergy.Allergen;
+import com.project.entity.allergy.AllergyProfileSchema;
 import com.project.mopa.dto.AllergenDTO;
 import com.project.mopa.dto.CreateAllergyProfileSchemaDTO;
 import com.project.mopa.dto.UpdateAllergyProfileSchemaDTO;
-import com.project.mopa.entity.allergy.*;
-import com.project.mopa.repository.allergy.AllergenRepository;
-import com.project.mopa.repository.allergy.AllergyProfileSchemaRepository;
+import com.project.mok.repository.allergy.AllergenRepository;
+import com.project.mok.repository.allergy.AllergyProfileSchemaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

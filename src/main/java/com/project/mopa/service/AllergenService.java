@@ -2,8 +2,8 @@ package com.project.mopa.service;
 
 import com.project.mopa.dto.CreateAllergenDTO;
 import com.project.mopa.dto.product.UpdateAllergenDTO;
-import com.project.mopa.entity.allergy.Allergen;
-import com.project.mopa.repository.allergy.AllergenRepository;
+import com.project.entity.allergy.Allergen;
+import com.project.mok.repository.allergy.AllergenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
