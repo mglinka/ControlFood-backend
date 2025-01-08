@@ -4,6 +4,7 @@ import com.project.dto.password.RequestChangePassword;
 import com.project.dto.update.UpdateAccountDataDTO;
 import com.project.entity.Account;
 import com.project.mok.repository.AccountRepository;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -44,21 +46,27 @@ public class MeService {
     }
 
     @Transactional
-    public Account updateInfo(UpdateAccountDataDTO accountData) {
+    public void updateInfo(UpdateAccountDataDTO accountData) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        Object principal = authentication.getPrincipal();
-        System.out.println(principal);
         Account account = (Account) authentication.getPrincipal();
-        Account accountToUpdate = accountRepository.findById(account.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
+        try {
+            Account accountToUpdate = accountRepository.findById(account.getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
-        accountToUpdate.setFirstName(accountData.getFirstName());
+            if(!Objects.equals(accountData.getVersion(), account.getVersion())){
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Optimistic Lock Exception");
+            }
 
-        accountToUpdate.setLastName(accountData.getLastName());
+             accountToUpdate.setFirstName(accountData.getFirstName());
+            accountToUpdate.setLastName(accountData.getLastName());
 
-        return accountRepository.saveAndFlush(accountToUpdate);
+            accountRepository.saveAndFlush(accountToUpdate);
 
+        } catch (OptimisticLockException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Data conflict occurred. Please retry.");
+        }
     }
+
+
 }

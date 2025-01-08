@@ -34,7 +34,7 @@ public class LoggerAspect {
         String transactionId = UUID.randomUUID().toString();
         TransactionContext.setTransactionId(transactionId);
 
-//        log.info("Transaction start");
+        log.info("Transaction start");
 
         String methodName = point.getSignature().getName();
         String className = point.getTarget().getClass().getSimpleName();
@@ -64,7 +64,7 @@ public class LoggerAspect {
             throw throwable;
 
         } finally {
-//            log.info("Transaction end");
+            log.info("Transaction end");
             TransactionContext.clear();
         }
     }
@@ -87,8 +87,7 @@ public class LoggerAspect {
 
         return List.of(args).stream()
                 .map(arg -> {
-                    if (arg instanceof AuthenticationRequest) {
-                        AuthenticationRequest authRequest = (AuthenticationRequest) arg;
+                    if (arg instanceof AuthenticationRequest authRequest) {
                         return "AuthenticationRequest[email=" + authRequest.getEmail() + ", password=****]";
                     }
                     return (arg != null) ? arg + " (" + arg.getClass().getSimpleName() + ")" : "null";

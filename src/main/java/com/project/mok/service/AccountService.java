@@ -24,47 +24,40 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccountService {
 
-    private final AccountRepository repository;
+    private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
     public List<Account> getAllAccounts(){
 
-        return repository.findAll();
+        return accountRepository.findAll();
     }
 
 
     public Account getAccountById(UUID id) {
 
-        return repository.findById(id)
+        return accountRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
     }
 
     public void deleteAccount(UUID id) {
 
-        repository.delete(getAccountById(id));
+        accountRepository.delete(getAccountById(id));
     }
 
     @Transactional
-    public Account updateMyAccountData(Account accountData, String eTag) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public Account updateAccountData(Account accountData, UUID id) {
 
-        Object principal = authentication.getPrincipal();
-        System.out.println(principal);
-        Account account = (Account) authentication.getPrincipal();
-        Account accountToUpdate = repository.findById(account.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+        Account accountToUpdate = accountRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Konto nie zostało znalezione"));
 
-        System.out.println("ETAG:"+ eTag);
-        if (!ETagBuilder.isETagValid(eTag, String.valueOf(accountToUpdate.getVersion()))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Optimistic lock exception");
-        }
 
+        accountToUpdate.setEmail(accountData.getEmail());
         accountToUpdate.setFirstName(accountData.getFirstName());
         accountToUpdate.setLastName(accountData.getLastName());
 
 
-        return repository.saveAndFlush(accountToUpdate);
+        return accountRepository.saveAndFlush(accountToUpdate);
     }
 
     @Transactional
@@ -77,12 +70,12 @@ public class AccountService {
         }
 
         account.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        repository.save(account);
+        accountRepository.save(account);
     }
 
     @Transactional
     public void changeRole (UUID accountId, UUID roleId) {
-        Account account = repository.findById(accountId)
+        Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
         Role role = roleRepository.findById(roleId)
@@ -93,24 +86,24 @@ public class AccountService {
         }
 
         account.setRole(role);
-        repository.save(account);
+        accountRepository.save(account);
     }
 
     @Transactional
     public void enableAccount(UUID id) {
-        Account account = repository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+        Account account = accountRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
         if(account.getEnabled()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account is already enabled");
         }
         account.setEnabled(true);
-        repository.saveAndFlush(account);
+        accountRepository.saveAndFlush(account);
 
     }
 
     @Transactional
     public void disableAccount(UUID id) {
-        Account account = repository.findById(id)
+        Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
         if (!account.getEnabled()) {
@@ -118,7 +111,7 @@ public class AccountService {
         }
 
         account.setEnabled(false);
-        repository.saveAndFlush(account);
+        accountRepository.saveAndFlush(account);
     }
 
     public List<Role> getAllRoles() {

@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class AllergenController {
     private final AllergenDTOConverter allergenDTOConverter;
 
 
+    @PreAuthorize("hasAnyRole('ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping
     public List<GetAllergenDTO> getAllAllergens() {
         List<GetAllergenDTO> getAllergenDTOS = allergenDTOConverter.allergenDTOList(allergenService.getAllAllergens());
@@ -35,6 +37,7 @@ public class AllergenController {
         return ResponseEntity.status(HttpStatus.OK).body(getAllergenDTOS).getBody();
     }
 
+    @PreAuthorize("hasRole('ROLE_SPECIALIST')")
     @PostMapping("/add")
     public ResponseEntity<GetAllergenDTO> addAllergen(@Valid @RequestBody CreateAllergenDTO createAllergenDTO) {
         System.out.println("Controller");
@@ -43,12 +46,14 @@ public class AllergenController {
         return ResponseEntity.status(HttpStatus.CREATED).body(allergenDTOConverter.toAllergenDTO(allergen));
     }
 
+    @PreAuthorize("hasRole('ROLE_SPECIALIST')")
     @PutMapping("/edit/{id}")
     public ResponseEntity<GetAllergenDTO> editAllergen(@PathVariable UUID id, @Valid @RequestBody UpdateAllergenDTO updateAllergenDTO){
         Allergen allergen = allergenService.editAllergen(id, updateAllergenDTO);
         return ResponseEntity.status(HttpStatus.OK).body(allergenDTOConverter.toAllergenDTO(allergen));
     }
 
+    @PreAuthorize("hasRole('ROLE_SPECIALIST')")
     @DeleteMapping("/remove/{id}")
     public ResponseEntity<?> removeAllergen(@PathVariable UUID id){
 

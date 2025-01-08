@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,12 +30,14 @@ public class ProductController {
     private final ProductDTOConverter productDTOConverter;
 
 
+    @PreAuthorize("hasAnyRole('ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping
     public List<GetProductDTO> getAllProducts() {
         List<GetProductDTO> getProductDTOS = productDTOConverter.productDTOList(productService.getAllProducts());
         return ResponseEntity.status(HttpStatus.OK).body(getProductDTOS).getBody();
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/add")
     public ResponseEntity<GetProductDTO> createProduct(@Valid
                                                            @RequestBody CreateProductDTO createProductDTO) {
@@ -43,6 +46,7 @@ public class ProductController {
         return new ResponseEntity<>(getProductDTO, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<GetProductDTO> getProductById(@PathVariable UUID id){
         GetProductDTO getProductDTO = productDTOConverter.toProductDTO(productService.getProductById(id));
@@ -50,7 +54,7 @@ public class ProductController {
     }
 
 
-
+    @PreAuthorize("hasAnyRole('ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping("/by-ean/{ean}")
     public ResponseEntity<GetProductDTO> getProductByEan(@PathVariable String ean) {
         Product product = productService.findByEan(ean);
@@ -64,6 +68,7 @@ public class ProductController {
                 .body(productDTOConverter.toProductDTO(product));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping("/withLabels")
     public List<GetProductDTO> getAllProductsWIthLabels(
             @RequestParam(defaultValue = "0") int page,
@@ -74,12 +79,14 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(getProductDTOS).getBody();
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping("/category")
     public ResponseEntity<List<GetProductDTO>> getProductsByCategory(@RequestParam String categoryName) {
         List<GetProductDTO> productDTOList = productDTOConverter.productDTOList(productService.getAllProductsByCategoryName(categoryName));
         return ResponseEntity.ok(productDTOList);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping("/withoutPagination")
     public List<GetProductDTO> getAllProductsWithoutPagination() {
         List<GetProductDTO> getProductDTOS = productDTOConverter.productDTOList(productService.getAllProductsWithoutPagination());

@@ -1,7 +1,7 @@
 package com.project.mok.controller;
 
+import com.project.dto.account.AccountDTO;
 import com.project.dto.account.GetAccountDTO;
-import com.project.dto.account.GetAccountPersonalDTO;
 import com.project.dto.account.RoleDTO;
 import com.project.dto.password.RequestChangePassword;
 import com.project.dto.converter.AccountDTOConverter;
@@ -39,6 +39,7 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.OK).body(getAccountDTOS).getBody();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/account/{id}")
     public ResponseEntity<GetAccountDTO> getAccountById(@PathVariable UUID id){
 
@@ -50,24 +51,24 @@ public class AccountController {
                 .body(getAccountDTO);
     }
 
-    @PutMapping("/user-data")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_PARTICIPANT')")
-    public ResponseEntity<GetAccountPersonalDTO> modifyAccountSelf(
-            @RequestHeader("If-Match") String eTag,
-            @Valid @RequestBody UpdateAccountDataDTO updateAccountDataDTO
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/user-data/{id}")
+    public ResponseEntity<AccountDTO> modifyAccount(
+            @Valid @RequestBody UpdateAccountDataDTO updateAccountDataDTO, @PathVariable UUID id
     ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(accountDTOConverter.toAccountPersonalDTO(
-                service.updateMyAccountData(accountDTOConverter.toAccount(updateAccountDataDTO), eTag)));
+                service.updateAccountData(accountDTOConverter.toAccount(updateAccountDataDTO), id)));
     }
 
 
 
-    @DeleteMapping("/account/{id}/delete")
-    public ResponseEntity<?> deleteAccount(@PathVariable("id") UUID id) {
-        service.deleteAccount(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/account/{id}/delete")
+//    public ResponseEntity<?> deleteAccount(@PathVariable("id") UUID id) {
+//        service.deleteAccount(id);
+//        return ResponseEntity.noContent().build();
+//    }
+
 
 
     @PatchMapping("/account/changePassword")
@@ -80,6 +81,7 @@ public class AccountController {
     }
 
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping("/roles")
     public List<RoleDTO> getAllRoles(){
         List<RoleDTO> getRolesDTO = accountDTOConverter.roleDtoList(service.getAllRoles());
@@ -87,18 +89,21 @@ public class AccountController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/changeRole")
     public ResponseEntity<?> changeRole(@RequestParam UUID accountId, @RequestParam UUID roleId){
         service.changeRole(accountId, roleId);
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/account/enableAccount")
     public ResponseEntity<?> enableAccount(UUID id) {
         service.enableAccount(id);
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/account/disableAccount")
     public ResponseEntity<?> disableAccount(UUID id) {
         service.disableAccount(id);

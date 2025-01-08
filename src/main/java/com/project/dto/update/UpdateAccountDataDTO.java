@@ -15,4 +15,6 @@ public class UpdateAccountDataDTO {
     @Size(min = 2, max = 64, message = "Nazwisko musi mieć od 2 do 64 znaków")
     private String lastName;
 
+    private Long version;
+
 }

@@ -1,7 +1,7 @@
 package com.project.dto.converter;
 
+import com.project.dto.account.AccountDTO;
 import com.project.dto.account.GetAccountDTO;
-import com.project.dto.account.GetAccountPersonalDTO;
 import com.project.dto.account.RoleDTO;
 import com.project.dto.update.UpdateAccountDataDTO;
 import com.project.entity.Account;
@@ -36,8 +36,8 @@ public class AccountDTOConverter {
 
     }
 
-    public GetAccountPersonalDTO toAccountPersonalDTO (Account account){
-        return modelMapper.map(account, GetAccountPersonalDTO.class);
+    public AccountDTO toAccountPersonalDTO (Account account){
+        return modelMapper.map(account, AccountDTO.class);
     }
 
     public GetAccountDTO toAccountDto(Account account) {

@@ -7,6 +7,7 @@ import com.project.mopa.service.PackageTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ public class PackageTypeController {
     private final ProductDTOConverter productDTOConverter;
     private final PackageTypeService packageTypeService;
 
+    @PreAuthorize("hasAnyRole('ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping
     public List<PackageTypeDTO> getAllPackageTypes() {
         List<PackageTypeDTO> packageTypeDTOS = productDTOConverter.packageTypeDTOList(packageTypeService.getAllPackageTypes());

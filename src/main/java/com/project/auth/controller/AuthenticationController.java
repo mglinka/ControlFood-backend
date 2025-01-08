@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -31,6 +32,7 @@ public class AuthenticationController {
     }
 
 
+
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate (@Valid @RequestBody AuthenticationRequest request){
         return ResponseEntity.ok(service.authenticate(request));
@@ -43,6 +45,7 @@ public class AuthenticationController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SPECIALIST', 'ROLE_USER')")
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

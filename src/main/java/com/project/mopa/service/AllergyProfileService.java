@@ -191,11 +191,9 @@ public class AllergyProfileService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
-        if (!(principal instanceof Account)) {
+        if (!(principal instanceof Account account)) {
             throw new IllegalStateException("Authenticated principal is not an instance of Account");
         }
-
-        Account account = (Account) principal;
 
         // Pobranie konta z repozytorium
         Optional<Account> optionalAccount = accountRepository.findById(account.getId());

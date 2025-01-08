@@ -9,6 +9,7 @@ import com.project.mopa.service.AllergyProfileSchemaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,24 +24,28 @@ public class AllergyProfileSchemaController {
     private final AllergyProfileSchemaService allergyProfileSchemaService;
     private final AllergyProfileDTOConverter allergyProfileDTOConverter;
 
+    @PreAuthorize("hasAnyRole('ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping
     public List<GetAllergyProfileSchemaDTO> getAllProfilesSchemas() {
         List<GetAllergyProfileSchemaDTO> profiles = allergyProfileDTOConverter.allergyProfileSchemaDtoList(allergyProfileSchemaService.getAllAllergyProfile());
         return ResponseEntity.status(HttpStatus.OK).body(profiles).getBody();
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<GetAllergyProfileSchemaDTO> getAllergyProfileSchemaById (@PathVariable UUID id){
         GetAllergyProfileSchemaDTO getAllergyProfileSchemaDTO = allergyProfileDTOConverter.toAllergyProfileSchemaDTO(allergyProfileSchemaService.getAllergyProfileSchemaById(id));
         return ResponseEntity.status(HttpStatus.FOUND).body(getAllergyProfileSchemaDTO);
     }
 
+    @PreAuthorize("hasRole('ROLE_SPECIALIST')")
     @PostMapping("/create")
     public ResponseEntity<?> createAllergyProfileSchema (@RequestBody CreateAllergyProfileSchemaDTO createAllergyProfileSchemaDTO){
         allergyProfileSchemaService.createProfile(createAllergyProfileSchemaDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PreAuthorize("hasRole('ROLE_SPECIALIST')")
     @PutMapping("/edit")
     public ResponseEntity<?> editAllergyProfileSchema (@RequestBody UpdateAllergyProfileSchemaDTO updateAllergyProfileSchemaDTO){
         allergyProfileSchemaService.editProfile(updateAllergyProfileSchemaDTO);
@@ -48,6 +53,7 @@ public class AllergyProfileSchemaController {
     }
 
 
+    @PreAuthorize("hasRole('ROLE_SPECIALIST')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteAllergyProfileSchema (@PathVariable UUID id){
         allergyProfileSchemaService.deleteAllergyProfileSchema(id);

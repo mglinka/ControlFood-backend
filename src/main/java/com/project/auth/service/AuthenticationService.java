@@ -27,7 +27,9 @@ import com.project.utils._enum.AccountRoleEnum;
 import com.project.utils.mail.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +38,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.postgresql.util.PSQLException;
 
 
 import java.io.*;
@@ -82,40 +85,44 @@ public class AuthenticationService {
 
 
     @Transactional
-    public AuthenticationResponse register (RegisterRequest request){
+    public AuthenticationResponse register(RegisterRequest request) {
+        try {
+            var account = Account.builder()
+                    .firstName(request.getFirstName())
+                    .lastName(request.getLastName())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .build();
 
+            var savedAccount = accountRepository.saveAndFlush(account);
+            var randString = TokenGenerator.generateToken();
 
-        var account = Account.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .build();
-        var savedAccount = accountRepository.saveAndFlush(account);
-        var randString = TokenGenerator.generateToken();
+            var expirationHours = 24;
+            var expirationDate = calculateExpirationDate(expirationHours);
+            var newAccountConfirmation = new AccountConfirmation(randString, account, expirationDate);
 
-        var expirationHours = 24;
-        var expirationDate = calculateExpirationDate(expirationHours);
-        var newAccountConfirmation = new AccountConfirmation(randString, account, expirationDate);
+            accountConfirmationRepository.saveAndFlush(newAccountConfirmation);
 
-        accountConfirmationRepository.saveAndFlush(newAccountConfirmation);
+            mailService.sendEmailToVerifyAccount(savedAccount, randString);
 
+            return AuthenticationResponse.builder()
+                    .build();
 
-
-
-        mailService.sendEmailToVerifyAccount(savedAccount,randString);
-
-        return AuthenticationResponse.builder()
-                .build();
-
-
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ten email jest już zajęty");
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Niepoprawnie wprowadzone dane");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Niespodziewany błąd");
+        }
     }
+
+
 
 
     @Transactional
     public String authenticate (AuthenticationRequest request){
 
-        log.info("ELO");
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -124,7 +131,7 @@ public class AuthenticationService {
                     )
             );
         } catch (Exception e) {
-            throw new RuntimeException("Invalid login credentials", e);
+            throw new RuntimeException("Niepoprawnie wprowadzone dane", e);
         }
 
         var account = accountRepository.findByEmail(request.getEmail())
