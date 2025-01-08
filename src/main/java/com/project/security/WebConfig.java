@@ -9,7 +9,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**").allowedOrigins("http://localhost:5173");
+        registry.addMapping("/api/**")
+                .allowedOrigins("http://localhost:5173", "https://orange-rock-03ed9c003.5.azurestaticapps.net");
     }
 }
 
