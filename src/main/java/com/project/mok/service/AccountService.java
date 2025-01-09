@@ -82,7 +82,7 @@ public class AccountService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
 
         if(account.getRole() != null && account.getRole().equals(role)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account already has this access level");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Konto już posiada ten poziom dostępu");
         }
 
         account.setRole(role);

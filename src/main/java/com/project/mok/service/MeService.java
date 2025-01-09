@@ -4,6 +4,7 @@ import com.project.dto.password.RequestChangePassword;
 import com.project.dto.update.UpdateAccountDataDTO;
 import com.project.entity.Account;
 import com.project.mok.repository.AccountRepository;
+import com.project.utils.ETagBuilder;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,7 +47,7 @@ public class MeService {
     }
 
     @Transactional
-    public void updateInfo(UpdateAccountDataDTO accountData) {
+    public void updateInfo(UpdateAccountDataDTO accountData, String eTag) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Account account = (Account) authentication.getPrincipal();
 
@@ -54,8 +55,19 @@ public class MeService {
             Account accountToUpdate = accountRepository.findById(account.getId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
 
-            if(!Objects.equals(accountData.getVersion(), account.getVersion())){
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Optimistic Lock Exception");
+            System.out.println("Start Service");
+            System.out.println("Received eTag: " + eTag);
+            System.out.println("Account version (as string): " + String.valueOf(accountToUpdate.getVersion()));  // Log the account version
+
+            String expectedETag = ETagBuilder.buildETag(String.valueOf(accountToUpdate.getVersion()));
+            System.out.println("Generated expected eTag: " + expectedETag);
+
+            boolean isValidETag = ETagBuilder.isETagValid(eTag, String.valueOf(accountToUpdate.getVersion()));
+            System.out.println("Is the eTag valid? " + isValidETag);
+
+            if (!isValidETag) {
+                System.out.println("Conflict: eTag mismatch detected");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Wyjątek blokady optymistycznej");
             }
 
              accountToUpdate.setFirstName(accountData.getFirstName());

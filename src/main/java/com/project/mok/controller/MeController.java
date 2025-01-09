@@ -34,9 +34,10 @@ public class MeController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SPECIALIST', 'ROLE_USER')")
     @PutMapping("/updateInfo")
-    public ResponseEntity<?> updateInfo(@Valid @RequestBody UpdateAccountDataDTO updateAccountDataDTO) {
+    public ResponseEntity<?> updateInfo(@Valid @RequestBody UpdateAccountDataDTO updateAccountDataDTO,  @RequestHeader("If-Match") String eTag) {
         try {
-            meService.updateInfo(updateAccountDataDTO);
+            System.out.println("etag"+ eTag);
+            meService.updateInfo(updateAccountDataDTO, eTag);
             return ResponseEntity.ok("Dane zostały zaktualizowane");
         } catch (OptimisticLockException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Dane zostały zmienione przez innego użytkownika");
@@ -45,5 +46,7 @@ public class MeController {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Wystąpił nieoczekiwany błąd - ll");
 //        }
     }
+
+
 
 }
