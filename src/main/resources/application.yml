@@ -1,11 +1,31 @@
 ---
-spring:
-
+app:
+  url: http://localhost:5173
   datasource:
     url: jdbc:postgresql://controlfood-db.postgres.database.azure.com:5432/postgres
     username: postgres
     password: P@ssword123
     driver-class-name: org.postgresql.Driver
+
+  auth:
+    url: jdbc:postgresql://controlfood-db.postgres.database.azure.com:5432/postgres
+    username: postgres
+    password: P@ssword123
+    driver-class-name: org.postgresql.Driver
+  mok:
+    url: jdbc:postgresql://controlfood-db.postgres.database.azure.com:5432/postgres
+    username: postgres
+    password: P@ssword123
+    driver-class-name: org.postgresql.Driver
+  mopa:
+    url: jdbc:postgresql://controlfood-db.postgres.database.azure.com:5432/postgres
+    username: postgres
+    password: P@ssword123
+    driver-class-name: org.postgresql.Driver
+
+
+spring:
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -56,8 +76,7 @@ spring:
       mail.smtp.starttls.enable: true
     transfer:
       protocol: smtp
-app:
-  url: http://localhost:5173
+
 server:
   port: 80
 
