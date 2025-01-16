@@ -1,6 +1,7 @@
 package com.project.dto.converter;
 
 import com.project.dto.account.AccountDTO;
+import com.project.dto.account.CreateAccountDTO;
 import com.project.dto.account.GetAccountDTO;
 import com.project.dto.account.RoleDTO;
 import com.project.dto.update.UpdateAccountDataDTO;
@@ -28,6 +29,9 @@ public class AccountDTOConverter {
         return roles.stream().map(this::toRoleDTO).toList();
     }
 
+    public Account toAccount (CreateAccountDTO createAccountDTO){
+        return modelMapper.map(createAccountDTO, Account.class);
+    }
 
 
     public Account toAccount(UpdateAccountDataDTO updateAccountDataDTO) {
@@ -41,8 +45,12 @@ public class AccountDTOConverter {
     }
 
     public GetAccountDTO toAccountDto(Account account) {
+        if (account.getRole() == null || account.getEnabled() == null) {
+            return null;
+        }
         GetAccountDTO getAccountDTO = modelMapper.map(account, GetAccountDTO.class);
 
+        System.out.println("Nie wime"+ account.getRole());
         getAccountDTO.setEnabled(account.getEnabled());
         getAccountDTO.setRole(account.getRole().getRoleName());
 

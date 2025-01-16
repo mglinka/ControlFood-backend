@@ -1,6 +1,7 @@
 package com.project.mok.controller;
 
 import com.project.dto.account.AccountDTO;
+import com.project.dto.account.CreateAccountDTO;
 import com.project.dto.account.GetAccountDTO;
 import com.project.dto.account.RoleDTO;
 import com.project.dto.password.RequestChangePassword;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Validated
 @RestController
@@ -35,8 +38,23 @@ public class AccountController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/accounts")
     public List<GetAccountDTO> getAllAccounts() {
-        List<GetAccountDTO> getAccountDTOS = accountDTOConverter.accountDtoList(service.getAllAccounts());
+        List<Account> accounts = service.getAllAccounts();
+        // Jeśli accountDTO jest null, nie zostanie dodane do listy
+        List<GetAccountDTO> getAccountDTOS = accounts.stream()
+                .map(accountDTOConverter::toAccountDto)
+                .filter(Objects::nonNull)  // Filtrowanie null
+                .collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(getAccountDTOS).getBody();
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/accounts/create")
+    public ResponseEntity<?> createAccount(@Valid @RequestBody CreateAccountDTO createAccountDTO) {
+        service.createAccount(createAccountDTO);
+
+
+        return ResponseEntity.ok("ok");
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

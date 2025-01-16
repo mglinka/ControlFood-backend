@@ -1,12 +1,20 @@
 package com.project.mok.service;
 
+import com.project.auth.dto.AuthenticationResponse;
+import com.project.dto.account.CreateAccountDTO;
+import com.project.dto.account.GetAccountDTO;
 import com.project.dto.password.RequestChangePassword;
 import com.project.entity.Account;
+import com.project.entity.AccountConfirmation;
 import com.project.entity.Role;
 import com.project.mok.repository.AccountRepository;
 import com.project.auth.repository.RoleRepository;
 import com.project.utils.ETagBuilder;
+import com.project.utils.TokenGenerator;
+import com.project.utils._enum.AccountRoleEnum;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,7 +26,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
+import static com.project.utils.Utils.calculateExpirationDate;
 
 @Service
 @RequiredArgsConstructor
@@ -116,5 +127,44 @@ public class AccountService {
 
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
+    }
+
+    public void createAccount(CreateAccountDTO createAccount) {
+        try {
+            System.out.println("Start");
+            System.out.println(createAccount.getRole());
+
+            Role role = roleRepository.findByName(createAccount.getRole())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
+
+            System.out.println("rola"+ role);
+            var account = Account.builder()
+                    .firstName(createAccount.getFirstName())
+                    .lastName(createAccount.getLastName())
+                    .email(createAccount.getEmail())
+                    .password(passwordEncoder.encode(createAccount.getPassword()))
+                    .role(role)
+                    .enabled(true)
+                    .build();
+
+            System.out.println("Po accoountBuilder");
+            //            var randString = TokenGenerator.generateToken();
+//
+//            var expirationHours = 24;
+//            var expirationDate = calculateExpirationDate(expirationHours);
+//            var newAccountConfirmation = new AccountConfirmation(randString, account, expirationDate);
+
+
+//            mailService.sendEmailToVerifyAccount(savedAccount, randString);
+
+            accountRepository.saveAndFlush(account);
+
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ten email jest już zajęty");
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Niepoprawnie wprowadzone dane");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Niespodziewany błąd");
+        }
     }
 }

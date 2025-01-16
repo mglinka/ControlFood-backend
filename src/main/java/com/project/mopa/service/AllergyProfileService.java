@@ -187,7 +187,6 @@ public class AllergyProfileService {
     public AllergyProfile assignAllergyProfile(AssignProfileDTO dto) {
         System.out.println("DTO received: " + dto);
 
-        // Pobranie uwierzytelnionego użytkownika
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
@@ -195,7 +194,6 @@ public class AllergyProfileService {
             throw new IllegalStateException("Authenticated principal is not an instance of Account");
         }
 
-        // Pobranie konta z repozytorium
         Optional<Account> optionalAccount = accountRepository.findById(account.getId());
         if (optionalAccount.isEmpty()) {
             throw new IllegalArgumentException("Account not found with ID: " + account.getId());
@@ -203,52 +201,48 @@ public class AllergyProfileService {
 
         Account persistedAccount = optionalAccount.get();
 
-        // Sprawdzenie, czy konto już posiada profil alergii
         if (persistedAccount.getAllergyProfile() != null) {
             throw new RuntimeException("Account already has an allergy profile.");
         }
 
-        // Utworzenie nowego AllergyProfile
         AllergyProfile allergyProfile = new AllergyProfile();
-        allergyProfile.setAccount(persistedAccount); // Powiązanie profilu z kontem
+        allergyProfile.setAccount(persistedAccount);
 
-        // Pobranie schematów na podstawie `schema_ids` z DTO
         List<AllergyProfileSchema> schemas = dto.getSchema_ids().stream()
                 .map(schemaId -> allergyProfileSchemaRepository.findById(schemaId)
                         .orElseThrow(() -> new IllegalArgumentException("Schema not found with ID: " + schemaId)))
                 .collect(Collectors.toList());
 
-        // Ekstrakcja alergenów z wybranych schematów
         List<Allergen> allergens = schemas.stream()
                 .flatMap(schema -> schema.getAllergens().stream())
-                .distinct() // Usunięcie ewentualnych duplikatów
+                .map(allergen -> allergenRepository.findById(allergen.getAllergen_id())
+                        .orElseThrow(() -> new IllegalArgumentException("Allergen not found with ID: " + allergen.getAllergen_id())))
+                .distinct()
                 .collect(Collectors.toList());
 
-        // Mapowanie alergenów na encje ProfileAllergen
-        List<ProfileAllergen> profileAllergens = allergens.stream()
-                .map(allergen -> {
-                    ProfileAllergen profileAllergen = new ProfileAllergen();
-                    ProfileAllergenId profileAllergenId = new ProfileAllergenId();
-                    profileAllergenId.setAllergenId(allergen.getAllergen_id());
-                    profileAllergenId.setProfileId(allergyProfile.getProfile_id());
+        List<ProfileAllergen> profileAllergens = new ArrayList<>();
 
-                    profileAllergen.setId(profileAllergenId);
-                    profileAllergen.setIntensity(dto.getIntensity()); // Ustawienie globalnej intensywności
-                    profileAllergen.setAllergen(allergen);
-                    profileAllergen.setAllergyProfile(allergyProfile);
+        allergyProfile = allergyProfileRepository.save(allergyProfile);  // Save profile first to get profile_id
 
-                    return profileAllergen;
-                })
-                .collect(Collectors.toList());
+        for (Allergen allergen : allergens) {
+            ProfileAllergen profileAllergen = new ProfileAllergen();
+            ProfileAllergenId profileAllergenId = new ProfileAllergenId();
+            profileAllergenId.setAllergenId(allergen.getAllergen_id());
+            profileAllergenId.setProfileId(allergyProfile.getProfile_id());
 
-        // Ustawienie alergenów w profilu alergii
+            profileAllergen.setId(profileAllergenId);
+            profileAllergen.setIntensity(dto.getIntensity());
+            profileAllergen.setAllergen(allergen);
+            profileAllergen.setAllergyProfile(allergyProfile);
+
+            profileAllergens.add(profileAllergen);
+        }
+
         allergyProfile.setProfileAllergens(profileAllergens);
 
-
-        // Zapisanie profilu alergii
+        // Save the updated allergy profile with allergens
         AllergyProfile savedProfile = allergyProfileRepository.save(allergyProfile);
 
-        // Aktualizacja konta z powiązanym profilem alergii
         persistedAccount.setAllergyProfile(savedProfile);
         accountRepository.save(persistedAccount);
 
@@ -256,6 +250,7 @@ public class AllergyProfileService {
 
         return savedProfile;
     }
+
 
 
 

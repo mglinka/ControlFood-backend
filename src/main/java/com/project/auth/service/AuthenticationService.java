@@ -131,7 +131,7 @@ public class AuthenticationService {
                     )
             );
         } catch (Exception e) {
-            throw new RuntimeException("Niepoprawnie wprowadzone dane", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Niepoprawnie wprowadzone dane");
         }
 
         var account = accountRepository.findByEmail(request.getEmail())

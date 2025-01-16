@@ -35,3 +35,26 @@ spring:
 server:
   port: 8080
 
+
+
+#
+#app:
+#  datasource:
+#    jdbc-url: jdbc:postgresql://localhost:5432/postgres
+#    username: admin
+#    password: password
+#
+#  auth:
+#    jdbc-url: jdbc:postgresql://localhost:5432/postgres
+#    username: auth
+#    password: password
+#  mok:
+#    jdbc-url: jdbc:postgresql://localhost:5432/postgres
+#    username: mok
+#    password: password
+#  mopa:
+#    jdbc-url: jdbc:postgresql://localhost:5432/postgres
+#    username: mopa
+#    password: password
+#
+

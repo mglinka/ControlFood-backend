@@ -18,9 +18,6 @@ public class AuthenticationRequest {
     private String email;
 
     @NotBlank(message = "Hasło nie może być puste")
-    @Size(min = 8, message = "Hasło musi mieć co najmniej 8 znaków")
-    @Pattern(regexp = ".*[A-Z].*", message = "Hasło musi zawierać co najmniej jedną wielką literę")
-    @Pattern(regexp = ".*[0-9].*", message = "Hasło musi zawierać co najmniej jedną cyfrę")
-    @Pattern(regexp = ".*[\\W_].*", message = "Hasło musi zawierać co najmniej jeden znak specjalny")
+
     private String password;
 }
