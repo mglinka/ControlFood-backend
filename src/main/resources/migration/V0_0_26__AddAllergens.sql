@@ -1,31 +1,48 @@
-INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('1e9d8f57-9357-43ea-861f-26df156b7e92', 0, 'gluten', 'ALLERGEN');
-INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('bb537281-1b90-404e-b574-b14a472b4d84', 0, 'pszenica', 'ALLERGEN');
+-- INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('1e9d8f57-9357-43ea-861f-26df156b7e92', 0, 'gluten', 'ALLERGEN');
+-- INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('bb537281-1b90-404e-b574-b14a472b4d84', 0, 'pszenica', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('ff5f8578-3075-4f72-b446-4ac3a95cfb60', 0, 'żyto', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('a92e583c-3521-4e98-b4b7-32cb87baf8eb', 0, 'jęczmień', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('b861387d-f5cc-42a0-8dc5-c8fbd40eb547', 0, 'owies', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('715cd2e2-31a8-4e94-a0c3-5fb4290a0872', 0, 'orkisz', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('c92b2d99-40bb-4e29-a7f2-f6d5a9e6cc13', 0, 'kamut', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('d455e3f8-1c83-4c7a-a4e8-e7e1b823a64b', 0, 'skorupiaki', 'ALLERGEN');
-INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('9a6149b5-98c2-438d-92d7-499640aa78b6', 0, 'jaja', 'ALLERGEN');
+-- INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('9a6149b5-98c2-438d-92d7-499640aa78b6', 0, 'jaja', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('c7f54cc4-0f8f-4c0b-b409-f16384c1e1f4', 0, 'ryby', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('ca8c0c4c-b8a3-4fa4-b550-53d1b95fbc72', 0, 'orzeszki ziemne', 'ALLERGEN');
-INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('ae57bc1c-429c-44da-9946-3e4de8c55d33', 0, 'soja', 'ALLERGEN');
-INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('b0fdc2e5-1e25-4cc5-b1c9-7aabc11cf342', 0, 'mleko', 'ALLERGEN');
+-- INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('ae57bc1c-429c-44da-9946-3e4de8c55d33', 0, 'soja', 'ALLERGEN');
+-- INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('b0fdc2e5-1e25-4cc5-b1c9-7aabc11cf342', 0, 'mleko', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('afc05894-2179-49b8-9186-43dd3177a960', 0, 'laktoza', 'ALLERGEN');
-INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('9c20b5f9-0583-4b57-b79d-b8c4768db2b4', 0, 'migdały', 'ALLERGEN');
+-- INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('9c20b5f9-0583-4b57-b79d-b8c4768db2b4', 0, 'migdały', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('85eeb1b6-00bb-46b5-b65f-e8d6f08a0c45', 0, 'orzechy laskowe', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('da348d4a-d422-4a4b-86ba-d192f9de2e4b', 0, 'orzechy włoskie', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('f946792e-0e26-4934-b659-908774b39d11', 0, 'orzeszki pekan', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('f5e19944-e13c-4a89-88c1-9ae9d7b460d3', 0, 'orzechy brazylijskie', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('aa4b8769-0d7d-4cfb-870c-91e8b70e8542', 0, 'pistacje', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('d053a173-9aa5-4a7c-b184-611d1ab94b8e', 0, 'orzechy makadamia', 'ALLERGEN');
-INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('df45c2c6-1e3d-4a7e-bc2f-b35f9d8d6bc2', 0, 'seler', 'ALLERGEN');
-INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('84a4f32f-fbf1-4649-8dcb-d9b2f3b876d1', 0, 'gorczyca', 'ALLERGEN');
-INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('69bf48d2-0827-4a47-9064-8edfb5c29d89', 0, 'sezam', 'ALLERGEN');
+-- INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('df45c2c6-1e3d-4a7e-bc2f-b35f9d8d6bc2', 0, 'seler', 'ALLERGEN');
+-- INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('84a4f32f-fbf1-4649-8dcb-d9b2f3b876d1', 0, 'gorczyca', 'ALLERGEN');
+-- INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('69bf48d2-0827-4a47-9064-8edfb5c29d89', 0, 'sezam', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('c6496498-f5ab-4f5b-bb4d-82c2d22f3145', 0, 'dwutlenek siarki', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('c88c56e2-cdc9-4baf-9a74-1c41735c718b', 0, 'siarczyny', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('e6f4c3f3-7d93-4e17-b8a4-d59db5d3fdbc', 0, 'łubin', 'ALLERGEN');
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('37a9b542-0bdc-45fc-9e3a-5b5f9d5e51c5', 0, 'mięczaki', 'ALLERGEN');
+
+UPDATE allergen
+SET type = 'ALLERGEN'
+WHERE allergen_id IN (
+                      '2362a32b-30fb-4a53-9c95-ba4ec24a2cf7',
+                      'c07c9cfd-d84b-4be7-bc08-73cb7e28a9e2',
+                      'c17c9cfd-d84b-4be7-bc08-73cb7e28a9e2',
+                      'c27c9cfd-d84b-4be7-bc08-73cb7e28a9e2',
+                      'c37c9cfd-d84b-4be7-bc08-73cb7e28a9e2',
+                      'c47c9cfd-d84b-4be7-bc08-73cb7e28a9e2',
+                      'c67c9cfd-d84b-4be7-bc08-73cb7e28a9e2',
+                      'c77c9cfd-d84b-4be7-bc08-73cb7e28a9e2',
+                      'c87c9cfd-d84b-4be7-bc08-73cb7e28a9e2',
+                      'c97c9cfd-d84b-4be7-bc08-73cb7e28a9e2',
+                      'c99c9cfd-d84b-4be7-bc08-73cb7e28a9e2',
+                      'c44c9cfd-d84b-4be7-bc08-73cb7e28a9e2'
+    );
 
 
 INSERT INTO public.allergen (allergen_id, version, name, type) VALUES ('23bca9d7-8c3f-4a74-b8f2-1b673d09fa53', 0, 'fruktoza', 'INTOLERANT_INGREDIENT');
