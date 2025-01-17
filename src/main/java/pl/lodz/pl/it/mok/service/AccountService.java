@@ -1,0 +1,159 @@
+package pl.lodz.pl.it.mok.service;
+
+import pl.lodz.pl.it.dto.account.CreateAccountDTO;
+import pl.lodz.pl.it.dto.password.RequestChangePassword;
+import pl.lodz.pl.it.entity.Account;
+import pl.lodz.pl.it.entity.Role;
+import pl.lodz.pl.it.mok.repository.AccountRepository;
+import pl.lodz.pl.it.auth.repository.RoleRepository;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class AccountService {
+
+    private final AccountRepository accountRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public List<Account> getAllAccounts(){
+
+        return accountRepository.findAll();
+    }
+
+
+    public Account getAccountById(UUID id) {
+
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
+    }
+
+    public void deleteAccount(UUID id) {
+
+        accountRepository.delete(getAccountById(id));
+    }
+
+    @Transactional
+    public Account updateAccountData(Account accountData, UUID id) {
+
+        Account accountToUpdate = accountRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Konto nie zostało znalezione"));
+
+
+        accountToUpdate.setEmail(accountData.getEmail());
+        accountToUpdate.setFirstName(accountData.getFirstName());
+        accountToUpdate.setLastName(accountData.getLastName());
+
+
+        return accountRepository.saveAndFlush(accountToUpdate);
+    }
+
+    @Transactional
+    public void changePassword(RequestChangePassword request, Principal connectedUser) {
+
+        var account = (Account) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+        if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
+            throw new IllegalStateException("Password are not the same");
+        }
+
+        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        accountRepository.save(account);
+    }
+
+    @Transactional
+    public void changeRole (UUID accountId, UUID roleId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
+
+        if(account.getRole() != null && account.getRole().equals(role)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Konto już posiada ten poziom dostępu");
+        }
+
+        account.setRole(role);
+        accountRepository.save(account);
+    }
+
+    @Transactional
+    public void enableAccount(UUID id) {
+        Account account = accountRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+
+        if(account.getEnabled()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account is already enabled");
+        }
+        account.setEnabled(true);
+        accountRepository.saveAndFlush(account);
+
+    }
+
+    @Transactional
+    public void disableAccount(UUID id) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+
+        if (!account.getEnabled()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account is already disabled");
+        }
+
+        account.setEnabled(false);
+        accountRepository.saveAndFlush(account);
+    }
+
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
+    }
+
+    public void createAccount(CreateAccountDTO createAccount) {
+        try {
+            System.out.println("Start");
+            System.out.println(createAccount.getRole());
+
+            Role role = roleRepository.findByName(createAccount.getRole())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
+
+            System.out.println("rola"+ role);
+            var account = Account.builder()
+                    .firstName(createAccount.getFirstName())
+                    .lastName(createAccount.getLastName())
+                    .email(createAccount.getEmail())
+                    .password(passwordEncoder.encode(createAccount.getPassword()))
+                    .role(role)
+                    .enabled(true)
+                    .build();
+
+            System.out.println("Po accoountBuilder");
+            //            var randString = TokenGenerator.generateToken();
+//
+//            var expirationHours = 24;
+//            var expirationDate = calculateExpirationDate(expirationHours);
+//            var newAccountConfirmation = new AccountConfirmation(randString, account, expirationDate);
+
+
+//            mailService.sendEmailToVerifyAccount(savedAccount, randString);
+
+            accountRepository.saveAndFlush(account);
+
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ten email jest już zajęty");
+        } catch (ConstraintViolationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Niepoprawnie wprowadzone dane");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Niespodziewany błąd");
+        }
+    }
+}
