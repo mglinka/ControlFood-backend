@@ -39,10 +39,9 @@ public class AccountController {
     @GetMapping("/accounts")
     public List<GetAccountDTO> getAllAccounts() {
         List<Account> accounts = service.getAllAccounts();
-        // Jeśli accountDTO jest null, nie zostanie dodane do listy
         List<GetAccountDTO> getAccountDTOS = accounts.stream()
                 .map(accountDTOConverter::toAccountDto)
-                .filter(Objects::nonNull)  // Filtrowanie null
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(getAccountDTOS).getBody();
     }
@@ -54,7 +53,7 @@ public class AccountController {
         service.createAccount(createAccountDTO);
 
 
-        return ResponseEntity.ok("ok");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

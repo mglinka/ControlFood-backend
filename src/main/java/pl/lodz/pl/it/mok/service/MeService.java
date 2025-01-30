@@ -66,7 +66,7 @@ public class MeService {
 
             if (!isValidETag) {
                 System.out.println("Conflict: eTag mismatch detected");
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Wyjątek blokady optymistycznej");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Nieaktualne dane");
             }
 
              accountToUpdate.setFirstName(accountData.getFirstName());

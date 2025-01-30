@@ -1,32 +1,24 @@
 <configuration>
 
-    <!-- Console Appender for STDOUT -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- Encoder format for logs -->
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{transactionId}] %-5level %logger{36} -- %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Rolling File Appender for daily logs -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- Rolling policy: files are rolled every day -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- Filename pattern for rolled files (daily with minute precision) -->
             <fileNamePattern>logs/log-%d{yyyy-MM-dd-HH}.log</fileNamePattern>
 
-            <!-- Optional configurations for log file history -->
-            <maxHistory>30</maxHistory> <!-- Retain logs for 30 days -->
-            <totalSizeCap>1GB</totalSizeCap> <!-- Limit total log file size to 1 GB -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
 
-        <!-- Encoder format for logs -->
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{transactionId}] %-5level %logger{36} -- %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Root Logger Configuration -->
     <root level="INFO">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />

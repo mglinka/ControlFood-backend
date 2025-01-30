@@ -1,0 +1,16 @@
+app:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  auth:
+    driver-class-name: org.postgresql.Driver
+  mok:
+    driver-class-name: org.postgresql.Driver
+  mopa:
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  level:
+    root: info
+#    org.postgresql: warn
+#    com.zaxxer.hikari: debug
+

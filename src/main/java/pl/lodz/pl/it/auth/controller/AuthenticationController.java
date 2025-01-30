@@ -1,6 +1,9 @@
 package pl.lodz.pl.it.auth.controller;
 
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import pl.lodz.pl.it.auth.service.AuthenticationService;
 import pl.lodz.pl.it.auth.dto.AuthenticationRequest;
 import pl.lodz.pl.it.auth.dto.AuthenticationResponse;
@@ -15,6 +18,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import pl.lodz.pl.it.entity.Account;
+
+import java.util.UUID;
 
 
 @Validated
@@ -23,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService service;
+
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register (@Valid @RequestBody RegisterRequest request){
@@ -50,13 +57,20 @@ public class AuthenticationController {
     public ResponseEntity<?> logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        SecurityContextHolder.clearContext();
-        if(authentication == null) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.badRequest().body("");
+        // Sprawdzenie, czy principal jest typu Account
+        if (authentication != null && authentication.getPrincipal() instanceof Account) {
+            Account account = (Account) authentication.getPrincipal();
+            UUID accountId = account.getId(); // Pobieramy accountId z obiektu Account
 
+            // Przekazywanie accountId do serwisu logout
+            service.logout(accountId);
+
+            SecurityContextHolder.clearContext();
+            return ResponseEntity.ok().body("Successfully logged out."); // 200 OK with success message
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
 
     @GetMapping("/refresh-token")
     public ResponseEntity<String> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {

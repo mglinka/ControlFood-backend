@@ -1,5 +1,8 @@
 package pl.lodz.pl.it.mok.service;
 
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import pl.lodz.pl.it.dto.account.CreateAccountDTO;
 import pl.lodz.pl.it.dto.password.RequestChangePassword;
 import pl.lodz.pl.it.entity.Account;
@@ -118,6 +121,7 @@ public class AccountService {
         return roleRepository.findAll();
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     public void createAccount(CreateAccountDTO createAccount) {
         try {
             System.out.println("Start");
@@ -137,14 +141,7 @@ public class AccountService {
                     .build();
 
             System.out.println("Po accoountBuilder");
-            //            var randString = TokenGenerator.generateToken();
-//
-//            var expirationHours = 24;
-//            var expirationDate = calculateExpirationDate(expirationHours);
-//            var newAccountConfirmation = new AccountConfirmation(randString, account, expirationDate);
 
-
-//            mailService.sendEmailToVerifyAccount(savedAccount, randString);
 
             accountRepository.saveAndFlush(account);
 

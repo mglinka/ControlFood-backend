@@ -49,6 +49,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static pl.lodz.pl.it.utils.Utils.calculateExpirationDate;
 
@@ -170,8 +171,12 @@ public class AuthenticationService {
         RunAs.runAsSystem(() -> mailService.sendEmailToInformAboutVerification(account));
     }
 
-    public void logout(String token) {
-        jwtWhitelistRepository.deleteByToken(token);
+    @Transactional
+    public void logout(UUID accountId) {
+        //String token = String.valueOf(jwtWhitelistRepository.findByAccount_Id(accountId));
+        System.out.println("Przed usu");
+        jwtWhitelistRepository.deleteAllByAccount_Id(accountId);
+        System.out.println("Po usu");
     }
 
 
@@ -192,7 +197,6 @@ public class AuthenticationService {
     @Transactional
     public AuthenticationResponse authenticateWithGoogle(String idToken) {
         try {
-            System.out.println("BartekFirst"+googleClientId);
             HttpTransport transport = new NetHttpTransport();
 
 
@@ -202,7 +206,6 @@ public class AuthenticationService {
                     .build();
 
             idToken = idToken.trim().replace("\"", "");
-            System.out.println("Bartek1"+idToken);
 
             GoogleIdToken token = verifier.verify(idToken);
             if (token == null) {

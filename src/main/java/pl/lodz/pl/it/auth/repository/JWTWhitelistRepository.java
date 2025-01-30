@@ -29,5 +29,6 @@ public interface JWTWhitelistRepository extends JpaRepository<JWTWhitelistToken,
     JWTWhitelistToken saveAndFlush(JWTWhitelistToken jwtWhitelistToken);
 
     Optional<JWTWhitelistToken> findByToken(String token);
+    Optional<JWTWhitelistToken> findByAccount_Id(UUID accountId);
 
 }

@@ -25,6 +25,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -50,21 +51,19 @@ public class JwtService {
     @PreAuthorize("permitAll()")
     @Transactional
     public String generateToken(Map<String, Object> claims, Account account) {
-//        if (!account.getNonLocked()) {
-//            throw new AccountLockedException(ExceptionMessages.ACCOUNT_LOCKED);
-//        }
 
         var authorities = account.getAuthorities();
         List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).toList();
         String token = Jwts
                 .builder()
-                .setClaims(claims)
+                .claims(claims)
                 .claim("role", roles)
-                .setId(account.getId().toString())
-                .setSubject(account.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + config.getJwtExpiration()))
-                .signWith(getSecretKey(SECRET_KEY), SignatureAlgorithm.HS256)
+                .id(account.getId().toString())
+                .issuer(UUID.randomUUID().toString())
+                .subject(account.getEmail())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + config.getJwtExpiration()))
+                .signWith(getSecretKey(SECRET_KEY), Jwts.SIG.HS256)
                 .compact();
         jwtWhitelistRepository.saveAndFlush(new JWTWhitelistToken(token, extractExpiration(token, SECRET_KEY), account));
         return token;

@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()  // Ścieżki autoryzacyjne są publiczne
+                        .requestMatchers("/api/v1/accounts").permitAll()
                         .requestMatchers("/api/v1/accounts/**").permitAll()
                         .requestMatchers("/api/v1/account/**").permitAll()
                         .requestMatchers("/api/v1/**").permitAll()
@@ -52,19 +53,6 @@ public class SecurityConfig {
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
-
-//                // Logowanie przez OAuth2
-//                .oauth2Login(oauth2 -> oauth2
-//                        .loginPage("/api/v1/auth/google/redirect") // Punkt wejścia dla logowania OAuth2
-//                        .defaultSuccessUrl("/api/v1/auth/google/success", true) // Domyślny sukces po logowaniu
-//                )
-//
-//                // Obsługa chronionych zasobów z użyciem JWT
-//                .oauth2ResourceServer(oauth2 -> oauth2
-//                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())) // Nowa metoda
-//                )
-
-                // Konfiguracja uwierzytelniania JWT
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .sessionManagement(session -> session
@@ -72,12 +60,7 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider);
 
-
-
-
-
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 

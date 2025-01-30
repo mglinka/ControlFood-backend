@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Aspect
-@Order(100)
 @Component
 public class LoggerAspect {
 
@@ -40,12 +39,11 @@ public class LoggerAspect {
         TransactionContext.setTransactionId(transactionId);
 
         log.info("Transaction start");
-
         String methodName = point.getSignature().getName();
         String className = point.getTarget().getClass().getSimpleName();
         StringBuilder logMessage = new StringBuilder();
 
-        boolean success = false; // Flag to track success
+        boolean success = false;
 
         try {
             String callerIdentity = getCallerIdentity();
@@ -62,7 +60,7 @@ public class LoggerAspect {
             log.info(logMessage.toString());
 
             Object result = point.proceed();
-            success = true; // Mark as success if no exception occurs
+            success = true;
 
             log.info("Method returned: {} | Type: {}", result, result != null ? result.getClass().getSimpleName() : "void");
             return result;
@@ -70,7 +68,6 @@ public class LoggerAspect {
         } catch (Throwable throwable) {
             logMessage.append("Exception: ").append(throwable.getClass().getSimpleName())
                     .append(" | Message: ").append(throwable.getMessage());
-//            log.error(logMessage.toString(), throwable);
             throw throwable;
 
         } finally {
@@ -79,7 +76,6 @@ public class LoggerAspect {
             } else {
                 log.warn("Transaction rolled back | TransactionId: {}", transactionId);
             }
-//            log.info("Transaction end");
             TransactionContext.clear();
         }
     }
