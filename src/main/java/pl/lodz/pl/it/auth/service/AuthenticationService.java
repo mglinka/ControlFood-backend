@@ -88,11 +88,12 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
         try {
             var account = Account.builder()
-                    .firstName(request.getFirstName())
-                    .lastName(request.getLastName())
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .build();
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .enabled(false)
+                .build();
 
             var savedAccount = accountRepository.saveAndFlush(account);
             var randString = TokenGenerator.generateToken();
@@ -103,10 +104,16 @@ public class AuthenticationService {
 
             accountConfirmationRepository.saveAndFlush(newAccountConfirmation);
 
-            mailService.sendEmailToVerifyAccount(savedAccount, randString);
+            try {
+                mailService.sendEmailToVerifyAccount(savedAccount, randString);
+            } catch (Exception e) {
+                System.out.println("Bar, Error sending verification email: " + e.getMessage());
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error sending email verification");
+            }
 
-            return AuthenticationResponse.builder()
-                    .build();
+            System.out.println("Przed builder");
+            return AuthenticationResponse.builder().build();
+
 
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ten email jest już zajęty");
@@ -257,7 +264,6 @@ public class AuthenticationService {
     public AuthenticationResponse authenticateWithAmazon(String accessToken) {
             try {
                 accessToken = accessToken.trim().replace("\"", "");
-                // Step 1: Validate the access token
                 String tokenInfoUrl = AMAZON_TOKEN_INFO_URL + "?access_token=" +
                         java.net.URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
 
@@ -268,7 +274,6 @@ public class AuthenticationService {
                     throw new IllegalArgumentException("Invalid token: The token does not belong to this client.");
                 }
 
-                // Step 2: Fetch user profile
                 Map<String, Object> userProfile = sendAuthorizedGetRequest(AMAZON_PROFILE_URL, accessToken);
 
                 System.out.println("Barr"+userProfile);
@@ -291,14 +296,13 @@ public class AuthenticationService {
                         account = Account.builder()
                                 .email(email)
                                 .firstName(firstName)
-                                .lastName(lastName) // Ustawienie nazwiska
+                                .lastName(lastName)
                                 .enabled(true)
                                 .password(password)
                                 .role(role)
                                 .build();
                         accountRepository.save(account);
                     } else {
-                        // Obsługuje przypadek, gdy email lub name są null lub nieprawidłowe
                         throw new IllegalArgumentException("Email and name must not be null or empty");
                     }
                 }

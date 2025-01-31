@@ -13,7 +13,7 @@ import java.util.Locale;
 @Service
 @AllArgsConstructor
 @Transactional
-@PreAuthorize("hasRole('ROLE_SYSTEM')")
+//@PreAuthorize("hasRole('ROLE_SYSTEM')")
 public class MailTemplateService {
 
     private MessageSource messageSource;
@@ -28,6 +28,7 @@ public class MailTemplateService {
         String mailText = "<html> <body> <h2> " + name + "</h2>" + "<p> " + mailBody + " </p> </body> </html>";
         Mail mail = new Mail(mailTo.getEmail(), subject, mailText);
 
+        System.out.println("sendMail");
         mailSenderService.sendEmail(mail);
     }
 

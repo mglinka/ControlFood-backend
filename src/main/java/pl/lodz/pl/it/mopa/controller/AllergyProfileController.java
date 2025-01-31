@@ -1,6 +1,7 @@
 package pl.lodz.pl.it.mopa.controller;
 
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import pl.lodz.pl.it.entity.Account;
 import pl.lodz.pl.it.mok.repository.AccountRepository;
 import pl.lodz.pl.it.mopa.dto.GetAllergyProfileDTO;
@@ -32,6 +33,7 @@ public class AllergyProfileController {
     private final AllergyProfileDTOConverter allergyProfileDTOConverter;
     private final AccountRepository accountRepository;
 
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_SPECIALIST')")
     @GetMapping("/{id}")
     public ResponseEntity<GetAllergyProfileDTO> getAllergyProfileById(@PathVariable UUID id){
 
@@ -44,6 +46,7 @@ public class AllergyProfileController {
                 .body(getAllergyProfileDTO);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_SPECIALIST')")
     @GetMapping("/byAccount/{id}")
     public ResponseEntity<GetAllergyProfileDTO> getAllergyProfileByAccountId(@PathVariable UUID id) {
         System.out.println("Controller");
@@ -55,7 +58,7 @@ public class AllergyProfileController {
                 .body(getAllergyProfileDTO);
     }
 
-
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_SPECIALIST')")
     @PostMapping("/create")
     public ResponseEntity<GetAllergyProfileDTO> createProfile(@RequestBody CreateAllergyProfileDTO createAllergyProfileDTO) {
         AllergyProfile savedProfile = allergyProfileService.createProfile(createAllergyProfileDTO);
@@ -64,6 +67,7 @@ public class AllergyProfileController {
 
 
 
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_SPECIALIST')")
     @PutMapping("/update/{accountId}")
     public ResponseEntity<GetAllergyProfileDTO> updateAllergyProfile( @PathVariable UUID accountId, @RequestBody UpdateAllergyProfileDTO updateAllergyProfileDTO) {
         Account account = accountRepository.findById(accountId)
@@ -74,12 +78,14 @@ public class AllergyProfileController {
         return ResponseEntity.status(HttpStatus.OK).body(allergyProfileDTOConverter.toAllergyProfileDTO(updatedProfile));
     }
 
+    @PreAuthorize("hasRole('ROLE_SPECIALIST')")
     @GetMapping
     public List<GetAllergyProfileDTO> getAllProfiles() {
         List<GetAllergyProfileDTO> profiles = allergyProfileDTOConverter.allergyProfileDtoList(allergyProfileService.getAllAllergyProfile());
         return ResponseEntity.status(HttpStatus.OK).body(profiles).getBody();
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_SPECIALIST')")
     @PostMapping("/assignProfile")
     public ResponseEntity<?> assignAllergyProfile(@RequestBody AssignProfileDTO dto){
         allergyProfileService.assignAllergyProfile(dto);

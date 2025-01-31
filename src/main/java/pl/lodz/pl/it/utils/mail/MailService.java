@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 @Transactional
-@PreAuthorize("hasRole('ROLE_SYSTEM')")
+//@PreAuthorize("hasRole('ROLE_SYSTEM')")
 public class MailService {
 
     private final MailTemplateService mailTemplateService;
@@ -18,10 +18,12 @@ public class MailService {
 
 
     public void sendEmailToVerifyAccount(Account account, String randString) {
+        System.out.println("Mailservice start");
         StringBuilder sb = new StringBuilder();
         sb.append("<a href='http://localhost:8080/api/v1/auth/verify-account/");
         sb.append(randString);
         sb.append("'>Link</a>");
+        System.out.println("Mailservice wywoluje sendEMailTemplate");
         mailTemplateService.sendEmailTemplate(account, "mail.verify.account.subject",
                 "mail.verify.account.body", new Object[] {sb});
     }

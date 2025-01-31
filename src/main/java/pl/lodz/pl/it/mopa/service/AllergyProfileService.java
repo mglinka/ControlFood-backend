@@ -224,7 +224,7 @@ public class AllergyProfileService {
 
         List<ProfileAllergen> profileAllergens = new ArrayList<>();
 
-        allergyProfile = allergyProfileRepository.save(allergyProfile);  // Save profile first to get profile_id
+        allergyProfile = allergyProfileRepository.saveAndFlush(allergyProfile);  // Save profile first to get profile_id
 
         for (Allergen allergen : allergens) {
             ProfileAllergen profileAllergen = new ProfileAllergen();
@@ -242,7 +242,6 @@ public class AllergyProfileService {
 
         allergyProfile.setProfileAllergens(profileAllergens);
 
-        // Save the updated allergy profile with allergens
         AllergyProfile savedProfile = allergyProfileRepository.save(allergyProfile);
 
         persistedAccount.setAllergyProfile(savedProfile);

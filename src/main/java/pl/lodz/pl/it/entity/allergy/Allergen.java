@@ -35,5 +35,22 @@ public class Allergen {
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private AllergenType type;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Allergen allergen = (Allergen) o;
+        return Objects.equals(allergen_id, allergen.allergen_id) && Objects.equals(
+            name, allergen.name) && Objects.equals(version, allergen.version)
+            && type == allergen.type;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(allergen_id, name, version, type);
+    }
 }

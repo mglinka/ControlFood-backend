@@ -1,6 +1,7 @@
 package pl.lodz.pl.it.mopa.controller;
 
 
+import pl.lodz.pl.it.entity.allergy.AllergyProfileSchema;
 import pl.lodz.pl.it.mopa.dto.CreateAllergyProfileSchemaDTO;
 import pl.lodz.pl.it.mopa.dto.GetAllergyProfileSchemaDTO;
 import pl.lodz.pl.it.mopa.dto.UpdateAllergyProfileSchemaDTO;
@@ -40,9 +41,10 @@ public class AllergyProfileSchemaController {
 
     @PreAuthorize("hasRole('ROLE_SPECIALIST')")
     @PostMapping("/create")
-    public ResponseEntity<?> createAllergyProfileSchema (@RequestBody CreateAllergyProfileSchemaDTO createAllergyProfileSchemaDTO){
-        allergyProfileSchemaService.createProfile(createAllergyProfileSchemaDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<UUID> createAllergyProfileSchema (@RequestBody CreateAllergyProfileSchemaDTO createAllergyProfileSchemaDTO){
+        AllergyProfileSchema profile = allergyProfileSchemaService.createProfile(
+            createAllergyProfileSchemaDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(profile.getSchema_id());
     }
 
     @PreAuthorize("hasRole('ROLE_SPECIALIST')")

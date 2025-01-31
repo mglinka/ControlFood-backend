@@ -21,6 +21,7 @@ public class MailSenderService {
     public void sendEmail(Mail mail) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
+            System.out.println("Start w MailSenderService");
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             mimeMessageHelper.setSubject(mail.getMailSubject());
             mimeMessageHelper.setFrom(new InternetAddress(mail.getMailFrom()));

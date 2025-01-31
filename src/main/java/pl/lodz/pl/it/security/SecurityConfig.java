@@ -1,11 +1,13 @@
 package pl.lodz.pl.it.security;
 
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -14,14 +16,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -35,6 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()  // Ścieżki autoryzacyjne są publiczne
+                        .requestMatchers("/api/v1/auth/register").permitAll()  // Ścieżki autoryzacyjne są publiczne
+                        .requestMatchers("/api/v1/auth/verify-account/").permitAll()  // Ścieżki autoryzacyjne są publiczne
                         .requestMatchers("/api/v1/accounts").permitAll()
                         .requestMatchers("/api/v1/accounts/**").permitAll()
                         .requestMatchers("/api/v1/account/**").permitAll()
@@ -48,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET ,"/api/v1/products/withLabels").permitAll()
                         .requestMatchers("/api/v1/allergy-profiles/**").permitAll()
                         .requestMatchers("/api/v1/products/withIngredients").permitAll()
-                        .requestMatchers("/api/v1/allergy-profiles/create").permitAll()
+                        .requestMatchers("/api/v1/allergy-profiles/create").hasRole("")
                         .requestMatchers(HttpMethod.GET, "/api/v1/me").permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()

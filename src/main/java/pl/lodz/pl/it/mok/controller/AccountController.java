@@ -68,35 +68,6 @@ public class AccountController {
                 .body(getAccountDTO);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/user-data/{id}")
-    public ResponseEntity<AccountDTO> modifyAccount(
-            @Valid @RequestBody UpdateAccountDataDTO updateAccountDataDTO, @PathVariable UUID id
-    ) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(accountDTOConverter.toAccountPersonalDTO(
-                service.updateAccountData(accountDTOConverter.toAccount(updateAccountDataDTO), id)));
-    }
-
-
-
-//    @DeleteMapping("/account/{id}/delete")
-//    public ResponseEntity<?> deleteAccount(@PathVariable("id") UUID id) {
-//        service.deleteAccount(id);
-//        return ResponseEntity.noContent().build();
-//    }
-
-
-
-    @PatchMapping("/account/changePassword")
-    public ResponseEntity<?> changePassword(
-            @Valid @RequestBody RequestChangePassword request,
-            Principal connectedUser
-    ) {
-        service.changePassword(request, connectedUser);
-        return ResponseEntity.ok().build();
-    }
-
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SPECIALIST', 'ROLE_USER')")
     @GetMapping("/roles")

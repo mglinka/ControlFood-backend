@@ -1,7 +1,6 @@
-package pl.lodz.pl.it;
+package pl.lodz.pl.it.config;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import javax.sql.DataSource;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
@@ -30,7 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)  // Restart app after each class
 @ContextConfiguration(initializers = {AbstractIntegrationTest.Initializer.class})
 @ActiveProfiles({"test"})
-public abstract class AbstractIntegrationTest extends AbstractAuthorizationUtil{
+public abstract class AbstractIntegrationTest extends AbstractAuthorizationUtil {
 
   @LocalServerPort
   private int port;

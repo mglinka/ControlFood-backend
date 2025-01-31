@@ -4,6 +4,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import pl.lodz.pl.it.config.AbstractIntegrationTest;
 import pl.lodz.pl.it.entity.Account;
 import pl.lodz.pl.it.entity.Role;
 import pl.lodz.pl.it.entity.allergy.AllergenType;
@@ -15,7 +16,9 @@ import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 
 public class MopaIntegrationTests extends AbstractIntegrationTest {
 
@@ -35,7 +38,7 @@ public class MopaIntegrationTests extends AbstractIntegrationTest {
 
   }
 
-
+  //allergens
   @Test
   public void testGetAllAllergens() {
     given()
@@ -96,5 +99,68 @@ public class MopaIntegrationTests extends AbstractIntegrationTest {
         .statusCode(HttpStatus.OK.value())
         .body(equalTo("Allergen removed successfully."));  // Sprawdzamy komunikat
   }
+
+  //units
+  @Test
+  public void testGetAllUnits() {
+    given()
+        .auth().oauth2(
+            getAccessTokenForSpecialist())  // Obtain OAuth2 access token (implement this method)
+        .when()
+        .get("/api/v1/units")
+        .then()
+        .statusCode(HttpStatus.OK.value())
+        .body("$", notNullValue())
+        .body("size()", not(0));
+  }
+
+  @Test
+  public void testGetAllPackageTypes() {
+    given()
+        .auth().oauth2(getAccessTokenForSpecialist())
+        .when()
+        .get("/api/v1/package-types")
+        .then()
+        .statusCode(HttpStatus.OK.value())
+        .body("$", notNullValue())
+        .body("size()", not(0));
+  }
+  @Test
+  public void testGetAllNutritionalValueNames() {
+    given()
+        .auth().oauth2(getAccessTokenForSpecialist())
+        .when()
+        .get("/api/v1/nutritional-value/names")
+        .then()
+        .statusCode(HttpStatus.OK.value())
+        .body("$", notNullValue())
+        .body("size()", not(0));
+  }
+
+  @Test
+  public void testGetAllNutritionalValueGroupNames() {
+    given()
+        .auth().oauth2(getAccessTokenForSpecialist())
+        .when()
+        .get("/api/v1/nutritional-value/group-names")
+        .then()
+        .statusCode(HttpStatus.OK.value())
+        .body("$", notNullValue())
+        .body("size()", not(0));
+  }
+
+
+  @Test
+  public void testGetAllCategories() {
+    given()
+        .auth().oauth2(getAccessTokenForSpecialist())
+        .when()
+        .get("/api/v1/categories")
+        .then()
+        .statusCode(HttpStatus.OK.value())
+        .body("$", notNullValue())
+        .body("size()", not(0));
+  }
+
 
 }
