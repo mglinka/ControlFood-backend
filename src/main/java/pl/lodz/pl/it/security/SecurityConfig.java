@@ -34,6 +34,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         //.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()  // Ścieżki autoryzacyjne są publiczne
                         .requestMatchers("/api/v1/auth/**").permitAll()  // Ścieżki autoryzacyjne są publiczne
                         .requestMatchers("/api/v1/auth/register").permitAll()  // Ścieżki autoryzacyjne są publiczne
                         .requestMatchers("/api/v1/auth/verify-account/").permitAll()  // Ścieżki autoryzacyjne są publiczne
