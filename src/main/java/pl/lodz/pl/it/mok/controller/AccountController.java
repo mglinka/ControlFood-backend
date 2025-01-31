@@ -56,7 +56,7 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_SPECIALIST')")
     @GetMapping("/account/{id}")
     public ResponseEntity<GetAccountDTO> getAccountById(@PathVariable UUID id){
 
