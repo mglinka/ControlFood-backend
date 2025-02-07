@@ -21,7 +21,7 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copy the JAR file from the build stage
-COPY --from=build /app/target/project-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/controlfood-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the default Spring Boot port
 EXPOSE 8080
