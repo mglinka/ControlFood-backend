@@ -107,11 +107,10 @@ public class AuthenticationService {
             try {
                 mailService.sendEmailToVerifyAccount(savedAccount, randString);
             } catch (Exception e) {
-                System.out.println("Bar, Error sending verification email: " + e.getMessage());
+
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error sending email verification");
             }
 
-            System.out.println("Przed builder");
             return AuthenticationResponse.builder().build();
 
 
@@ -180,10 +179,7 @@ public class AuthenticationService {
 
     @Transactional
     public void logout(UUID accountId) {
-        //String token = String.valueOf(jwtWhitelistRepository.findByAccount_Id(accountId));
-        System.out.println("Przed usu");
         jwtWhitelistRepository.deleteAllByAccount_Id(accountId);
-        System.out.println("Po usu");
     }
 
 
@@ -276,7 +272,6 @@ public class AuthenticationService {
 
                 Map<String, Object> userProfile = sendAuthorizedGetRequest(AMAZON_PROFILE_URL, accessToken);
 
-                System.out.println("Barr"+userProfile);
                 String email = userProfile.get("email").toString();
                 String name = userProfile.get("name").toString();
                 Account account = accountRepository.findByEmail(email).orElse(null);

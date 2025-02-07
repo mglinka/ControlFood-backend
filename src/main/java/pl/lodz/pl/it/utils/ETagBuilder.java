@@ -15,16 +15,8 @@ public class ETagBuilder {
     }
 
     public static boolean isETagValid(String eTag, String version) {
-        // Clean the received eTag by trimming and removing quotes if present
         String cleanedETag = eTag.replaceAll("^\"|\"$", "").trim();
-
-        // Generate the expected ETag from version (and any other values you might need)
         String generatedETag = buildETag(version);
-
-        System.out.println("Cleaned received eTag: " + cleanedETag);  // Debugging log to see cleaned eTag
-        System.out.println("Generated expected eTag: " + generatedETag);  // Debugging log to see generated eTag
-
-        // Compare the cleaned eTag with the generated one
         return cleanedETag.equals(generatedETag);
     }
 

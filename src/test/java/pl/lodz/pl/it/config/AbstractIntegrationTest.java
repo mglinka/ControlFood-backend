@@ -36,7 +36,7 @@ public abstract class AbstractIntegrationTest extends AbstractAuthorizationUtil 
 
   @ClassRule
   public static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>(
-      "postgres:16")
+      "postgres:17")
       .withUsername("postgres")
       .withPassword("postgres")
       .withDatabaseName("postgres");

@@ -32,7 +32,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    database: postgresql
   security:
     oauth2:
       client:

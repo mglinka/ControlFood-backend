@@ -12,5 +12,8 @@ logging:
   level:
     root: info
 #    org.postgresql: warn
+#    org.flywaydb.core: DEBUG
 #    com.zaxxer.hikari: debug
-
+#spring:
+#  jpa:
+#    show-sql: true

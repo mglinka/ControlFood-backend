@@ -286,6 +286,36 @@ public class MokIntegrationTests extends AbstractIntegrationTest {
   }
 
   @Test
+  public void testRegisterBadRequest() {
+    given()
+            .contentType(ContentType.JSON)
+            .body("{"
+                    + "\"firstName\":\"Test\","
+                    + "\"lastName\":\"Testtest\","
+                    + "\"email\":\"martadaria0\","
+                    + "\"password\":\"P@ssword123\""
+                    + "}")
+            .when()
+            .post("api/v1/auth/register")
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+  }
+
+  @Test
+  public void testAuthenticateBadRequest() {
+    given()
+            .contentType(ContentType.JSON)
+            .body("{"
+                    + "\"email\":\"martadaria\","
+                    + "\"password\":\"P@ssword123\""
+                    + "}")
+            .when()
+            .post("api/v1/auth/authenticate")
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+  }
+
+  @Test
   public void testRegisterInvalidEmail() {
     given()
         .contentType(ContentType.JSON)
