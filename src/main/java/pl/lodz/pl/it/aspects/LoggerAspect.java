@@ -1,5 +1,8 @@
 package pl.lodz.pl.it.aspects;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Map;
 import pl.lodz.pl.it.auth.dto.AuthenticationRequest;
 import pl.lodz.pl.it.utils.TransactionContext;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,7 +65,11 @@ public class LoggerAspect {
             Object result = point.proceed();
             success = true;
 
-            log.info("Method returned: {} | Type: {}", result, result != null ? result.getClass().getSimpleName() : "void");
+
+            // Log result but avoid printing large arrays
+            String resultLog = formatResultLog(result);
+            log.info("Method returned: {}", resultLog);
+            
             return result;
 
         } catch (Throwable throwable) {
@@ -77,6 +84,49 @@ public class LoggerAspect {
                 log.warn("Transaction rolled back | TransactionId: {}", transactionId);
             }
             TransactionContext.clear();
+        }
+    }
+
+    private String formatResultLog(Object result) {
+        if (result == null) {
+            return "null";
+        }
+
+        if (result.getClass().isArray()) {
+            int length = Array.getLength(result);
+            if (length > 100) { // For large arrays, only log the size
+                return String.format("Array with %d elements", length);
+            } else {
+                StringBuilder arrayLog = new StringBuilder("Array[");
+                for (int i = 0; i < Math.min(length, 10); i++) {
+                    arrayLog.append(Array.get(result, i)).append(", ");
+                }
+                if (length > 10) {
+                    arrayLog.append("... (").append(length).append(" elements)");
+                } else {
+                    arrayLog.setLength(arrayLog.length() - 2);
+                }
+                arrayLog.append("]");
+                return arrayLog.toString();
+            }
+        } else if (result instanceof Collection<?>) {
+            Collection<?> collection = (Collection<?>) result;
+            int size = collection.size();
+            if (size > 100) {
+                return String.format("Collection with %d elements", size);
+            } else {
+                return collection.toString();
+            }
+        } else if (result instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) result;
+            int size = map.size();
+            if (size > 100) {
+                return String.format("Map with %d entries", size);
+            } else {
+                return map.toString();
+            }
+        } else {
+            return result.toString();
         }
     }
 
