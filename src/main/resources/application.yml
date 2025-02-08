@@ -2,26 +2,41 @@
 app:
   url: http://localhost:5173
   datasource:
-    jdbc-url: jdbc:postgresql://privatelink.postgres.database.azure.com:5432/postgres
+    url: jdbc:postgresql://controlfood.postgres.database.azure.com:5432/postgres
     username: postgres
     password: P@ssword123
     driver-class-name: org.postgresql.Driver
-
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 1
+      pool-name: AdminHikari-Pool
   auth:
-    jdbc-url: jdbc:postgresql://privatelink.postgres.database.azure.com:5432/postgres
+    url: jdbc:postgresql://controlfood.postgres.database.azure.com:5432/postgres
     username: postgres
     password: P@ssword123
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 1
+      pool-name: AuthHikari-Pool
   mok:
-    jdbc-url: jdbc:postgresql://privatelink.postgres.database.azure.com:5432/postgres
+    url: jdbc:postgresql://controlfood.postgres.database.azure.com:5432/postgres
     username: postgres
     password: P@ssword123
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 1
+      pool-name: MokHikari-Pool
   mopa:
-    jdbc-url: jdbc:postgresql://privatelink.postgres.database.azure.com:5432/postgres
+    url: jdbc:postgresql://controlfood.postgres.database.azure.com:5432/postgres
     username: postgres
     password: P@ssword123
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 1
+      pool-name: MopaHikari-Pool
 
 
 spring:

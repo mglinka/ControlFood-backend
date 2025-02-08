@@ -2,6 +2,7 @@ package pl.lodz.pl.it.config.datasources;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -22,12 +23,20 @@ import java.util.Objects;
         entityManagerFactoryRef = "mokEntityManagerFactory", transactionManagerRef = "mokTransactionManager")
 public class DataSourceMok {
 
-    @Bean(name = "mokDataSource")
-    @ConfigurationProperties(prefix = "app.mok")
-    public HikariDataSource mokDataSource() {
-        return DataSourceBuilder.create().type(HikariDataSource.class).build();
+    @Bean
+    @ConfigurationProperties("app.mok")
+    public DataSourceProperties mokDataSourceProperties() {
+        return new DataSourceProperties();
     }
 
+    @Bean(name = "mokDataSource")
+    @ConfigurationProperties("app.mok.hikari")
+    public HikariDataSource mokDataSource() {
+        return mokDataSourceProperties()
+                .initializeDataSourceBuilder()
+                .type(HikariDataSource.class)
+                .build();
+    }
 
     @Bean(name = "mokEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean mokEntityManagerFactory(@Qualifier("mokDataSource") HikariDataSource dataSource, EntityManagerFactoryBuilder builder) {

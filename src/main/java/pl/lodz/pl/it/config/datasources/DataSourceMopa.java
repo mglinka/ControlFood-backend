@@ -2,6 +2,7 @@ package pl.lodz.pl.it.config.datasources;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -18,13 +19,23 @@ import java.util.Objects;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages ="pl.lodz.pl.it.mopa.repository",
+@EnableJpaRepositories(basePackages = "pl.lodz.pl.it.mopa.repository",
         entityManagerFactoryRef = "mopaEntityManagerFactory", transactionManagerRef = "mopaTransactionManager")
 public class DataSourceMopa {
+
+    @Bean
+    @ConfigurationProperties("app.mopa")
+    public DataSourceProperties mopaDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
     @Bean(name = "mopaDataSource")
-    @ConfigurationProperties(prefix = "app.mopa")
+    @ConfigurationProperties("app.mopa.hikari")
     public HikariDataSource mopaDataSource() {
-        return DataSourceBuilder.create().type(HikariDataSource.class).build();
+        return mopaDataSourceProperties()
+                .initializeDataSourceBuilder()
+                .type(HikariDataSource.class)
+                .build();
     }
 
 

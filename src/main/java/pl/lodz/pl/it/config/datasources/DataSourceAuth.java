@@ -2,6 +2,7 @@ package pl.lodz.pl.it.config.datasources;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -23,12 +24,20 @@ import java.util.Objects;
 public class DataSourceAuth {
 
 
-    @Bean(name = "authDataSource")
-    @ConfigurationProperties(prefix = "app.auth")
-    public HikariDataSource authDataSource() {
-        return DataSourceBuilder.create().type(HikariDataSource.class).build();
+    @Bean
+    @ConfigurationProperties("app.auth")
+    public DataSourceProperties authDataSourceProperties() {
+        return new DataSourceProperties();
     }
 
+    @Bean(name = "authDataSource")
+    @ConfigurationProperties("app.auth.hikari")
+    public HikariDataSource authDataSource() {
+        return authDataSourceProperties()
+                .initializeDataSourceBuilder()
+                .type(HikariDataSource.class)
+                .build();
+    }
 
     @Bean(name = "authEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean authEntityManagerFactory(@Qualifier("authDataSource") HikariDataSource dataSource, EntityManagerFactoryBuilder builder) {
