@@ -2,23 +2,23 @@
 app:
   url: http://localhost:5173
   datasource:
-    jdbc-url: jdbc:postgresql://controlfood.postgres.database.azure.com:5432/postgres
+    jdbc-url: jdbc:postgresql://privatelink.postgres.database.azure.com:5432/postgres
     username: postgres
     password: P@ssword123
     driver-class-name: org.postgresql.Driver
 
   auth:
-    jdbc-url: jdbc:postgresql://controlfood.postgres.database.azure.com:5432/postgres
+    jdbc-url: jdbc:postgresql://privatelink.postgres.database.azure.com:5432/postgres
     username: postgres
     password: P@ssword123
     driver-class-name: org.postgresql.Driver
   mok:
-    jdbc-url: jdbc:postgresql://controlfood.postgres.database.azure.com:5432/postgres
+    jdbc-url: jdbc:postgresql://privatelink.postgres.database.azure.com:5432/postgres
     username: postgres
     password: P@ssword123
     driver-class-name: org.postgresql.Driver
   mopa:
-    jdbc-url: jdbc:postgresql://controlfood.postgres.database.azure.com:5432/postgres
+    jdbc-url: jdbc:postgresql://privatelink.postgres.database.azure.com:5432/postgres
     username: postgres
     password: P@ssword123
     driver-class-name: org.postgresql.Driver
