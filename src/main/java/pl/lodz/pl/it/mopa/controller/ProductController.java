@@ -36,7 +36,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(getProductDTOS).getBody();
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_SPECIALIST')")
     @PostMapping("/add")
     public ResponseEntity<GetProductDTO> createProduct(@Valid
                                                            @RequestBody CreateProductDTO createProductDTO) {

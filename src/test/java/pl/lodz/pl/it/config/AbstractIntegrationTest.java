@@ -66,19 +66,19 @@ public abstract class AbstractIntegrationTest extends AbstractAuthorizationUtil 
     public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
       postgresContainer.start();
       TestPropertyValues.of(
-          "app.datasource.jdbc-url=" + postgresContainer.getJdbcUrl(),
+          "app.datasource.url=" + postgresContainer.getJdbcUrl(),
           "app.datasource.username=" + postgresContainer.getUsername(),
           "app.datasource.password=" + postgresContainer.getPassword(),
 
-          "app.mok.jdbc-url=" + postgresContainer.getJdbcUrl(),
+          "app.mok.url=" + postgresContainer.getJdbcUrl(),
           "app.mok.username=" + postgresContainer.getUsername(),
           "app.mok.password=" + postgresContainer.getPassword(),
 
-          "app.mopa.jdbc-url=" + postgresContainer.getJdbcUrl(),
+          "app.mopa.url=" + postgresContainer.getJdbcUrl(),
           "app.mopa.username=" + postgresContainer.getUsername(),
           "app.mopa.password=" + postgresContainer.getPassword(),
 
-          "app.auth.jdbc-url=" + postgresContainer.getJdbcUrl(),
+          "app.auth.url=" + postgresContainer.getJdbcUrl(),
           "app.auth.username=" + postgresContainer.getUsername(),
           "app.auth.password=" + postgresContainer.getPassword()
       ).applyTo(configurableApplicationContext.getEnvironment());
