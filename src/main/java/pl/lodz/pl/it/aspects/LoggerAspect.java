@@ -63,6 +63,7 @@ public class LoggerAspect {
             success = true;
 
             log.info("Method returned: {}", result != null ? result.getClass().getSimpleName() : "void");
+            log.debug("Method returned: {}", result);
             return result;
 
         } catch (Throwable throwable) {
