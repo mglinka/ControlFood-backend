@@ -1,10 +1,8 @@
 package pl.lodz.pl.it.mok.service;
 
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import pl.lodz.pl.it.dto.account.CreateAccountDTO;
-import pl.lodz.pl.it.dto.password.RequestChangePassword;
 import pl.lodz.pl.it.entity.Account;
 import pl.lodz.pl.it.entity.Role;
 import pl.lodz.pl.it.mok.repository.AccountRepository;
@@ -13,13 +11,11 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,39 +37,6 @@ public class AccountService {
 
         return accountRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
-    }
-
-    public void deleteAccount(UUID id) {
-
-        accountRepository.delete(getAccountById(id));
-    }
-
-    @Transactional
-    public Account updateAccountData(Account accountData, UUID id) {
-
-        Account accountToUpdate = accountRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Konto nie zostało znalezione"));
-
-
-        accountToUpdate.setEmail(accountData.getEmail());
-        accountToUpdate.setFirstName(accountData.getFirstName());
-        accountToUpdate.setLastName(accountData.getLastName());
-
-
-        return accountRepository.saveAndFlush(accountToUpdate);
-    }
-
-    @Transactional
-    public void changePassword(RequestChangePassword request, Principal connectedUser) {
-
-        var account = (Account) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
-
-        if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
-            throw new IllegalStateException("Password are not the same");
-        }
-
-        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        accountRepository.save(account);
     }
 
     @Transactional

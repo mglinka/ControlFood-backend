@@ -1,12 +1,9 @@
 package pl.lodz.pl.it.mok.controller;
 
-import pl.lodz.pl.it.dto.account.AccountDTO;
 import pl.lodz.pl.it.dto.account.CreateAccountDTO;
 import pl.lodz.pl.it.dto.account.GetAccountDTO;
 import pl.lodz.pl.it.dto.account.RoleDTO;
-import pl.lodz.pl.it.dto.password.RequestChangePassword;
 import pl.lodz.pl.it.dto.converter.AccountDTOConverter;
-import pl.lodz.pl.it.dto.update.UpdateAccountDataDTO;
 import pl.lodz.pl.it.entity.Account;
 import pl.lodz.pl.it.mok.service.AccountService;
 import pl.lodz.pl.it.utils.ETagBuilder;
@@ -20,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;

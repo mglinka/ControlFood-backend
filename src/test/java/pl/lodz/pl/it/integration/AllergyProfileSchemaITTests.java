@@ -1,4 +1,4 @@
-package pl.lodz.pl.it;
+package pl.lodz.pl.it.integration;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;
@@ -6,7 +6,7 @@ import static org.hamcrest.core.IsNot.not;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import pl.lodz.pl.it.config.AbstractIntegrationTest;
+import pl.lodz.pl.it.integration.config.AbstractIntegrationTest;
 
 public class AllergyProfileSchemaITTests extends AbstractIntegrationTest {
 

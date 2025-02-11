@@ -1,4 +1,4 @@
-package pl.lodz.pl.it.config;
+package pl.lodz.pl.it.integration.config;
 
 import io.restassured.RestAssured;
 import javax.sql.DataSource;
@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)  // Restart app after each class
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @ContextConfiguration(initializers = {AbstractIntegrationTest.Initializer.class})
 @ActiveProfiles({"test"})
 public abstract class AbstractIntegrationTest extends AbstractAuthorizationUtil {
@@ -40,7 +40,6 @@ public abstract class AbstractIntegrationTest extends AbstractAuthorizationUtil 
       .withUsername("postgres")
       .withPassword("postgres")
       .withDatabaseName("postgres");
-
 
   @Autowired
   private DataSource dataSource;

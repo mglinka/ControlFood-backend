@@ -12,7 +12,6 @@ import pl.lodz.pl.it.mopa.repository.*;
 
 import java.util.Base64;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -26,14 +25,11 @@ public class ProductDTOConverter {
     private final PortionRepository portionRepository;
     private final ProducerRepository producerRepository;
     private final ProductRepository productRepository;
-    private final NutritionalIndexRepository nutritionalIndexRepository;
     private final NutritionalValueRepository nutritionalValueRepository;
     private final NutritionalValueGroupRepository nutritionalValueGroupRepository;
     private final NutritionalValueNameRepository nutritionalValueNameRepository;
     private final CompositionRepository compositionRepository;
     private final FlavourRepository flavourRepository;
-    private final ProductIndexRepository productIndexRepository;
-    private final RatingRepository ratingRepository;
     private final CategoryRepository categoryRepository;
 
     public GetProductDTO toProductDTO(Product product) {
@@ -240,13 +236,6 @@ public class ProductDTOConverter {
         return portionRepository.saveAndFlush(portion);
     }
 
-    private Set<NutritionalIndex> saveAndSetNutritionalIndexes(Set<NutritionalIndexDTO> nutritionalIndexDTOS) {
-        return nutritionalIndexDTOS.stream()
-                .map(dto -> modelMapper.map(dto, NutritionalIndex.class))
-                .map(nutritionalIndexRepository::saveAndFlush)
-                .collect(Collectors.toSet());
-
-    }
 
     private List<NutritionalValue> saveAndSetNutritionalValues(List<NutritionalValueDTO> nutritionalValueDTOS) {
         return nutritionalValueDTOS.stream()
@@ -269,21 +258,5 @@ public class ProductDTOConverter {
     private NutritionalValueName findNutritionalValueName(NutritionalValueNameDTO nutritionalValueName) {
         return nutritionalValueNameRepository.findByName(nutritionalValueName.getName()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nutritiion value name is missing."));
     }
-
-    private Set<ProductIndex> toProductIndexSet(Set<ProductIndexDTO> productIndexDTOS) {
-        return productIndexDTOS.stream()
-                .map(dto -> modelMapper.map(dto, ProductIndex.class))
-                .map(this.productIndexRepository::saveAndFlush)
-                .collect(Collectors.toSet());
-    }
-
-    private Set<Rating> toRatingSet(Set<RatingDTO> ratingDTOS) {
-        return ratingDTOS.stream()
-                .map(dto -> modelMapper.map(dto, Rating.class))
-                .map(this.ratingRepository::saveAndFlush)
-                .collect(Collectors.toSet());
-    }
-
-
 
 }

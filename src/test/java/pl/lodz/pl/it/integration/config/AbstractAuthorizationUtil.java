@@ -1,4 +1,4 @@
-package pl.lodz.pl.it.config;
+package pl.lodz.pl.it.integration.config;
 
 import static io.restassured.RestAssured.given;
 

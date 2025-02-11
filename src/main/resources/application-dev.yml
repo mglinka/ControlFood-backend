@@ -1,37 +1,37 @@
 
 app:
   datasource:
-    jdbc-url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: password
 
   auth:
-    jdbc-url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: password
   mok:
-    jdbc-url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: password
   mopa:
-    jdbc-url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: password
 
 
 
 
-spring:
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            clientId: 905964972839-drfppduor08qo3hllqf2uatj81nbfvmb.apps.googleusercontent.com
-            clientSecret: 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
-            scope: profile, email
-            authorizationGrantType: authorization_code
-            clientName: Google
+#spring:
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          google:
+#            clientId: 905964972839-drfppduor08qo3hllqf2uatj81nbfvmb.apps.googleusercontent.com
+#            clientSecret: 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
+#            scope: profile, email
+#            authorizationGrantType: authorization_code
+#            clientName: Google
 server:
   port: 8080
 

@@ -7,7 +7,6 @@ import pl.lodz.pl.it.entity.JWTWhitelistToken;
 import pl.lodz.pl.it.auth.repository.JWTWhitelistRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 

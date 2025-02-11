@@ -1,9 +1,6 @@
 package pl.lodz.pl.it.auth.controller;
 
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import pl.lodz.pl.it.auth.service.AuthenticationService;
 import pl.lodz.pl.it.auth.dto.AuthenticationRequest;
 import pl.lodz.pl.it.auth.dto.AuthenticationResponse;
@@ -57,12 +54,10 @@ public class AuthenticationController {
     public ResponseEntity<?> logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // Sprawdzenie, czy principal jest typu Account
         if (authentication != null && authentication.getPrincipal() instanceof Account) {
             Account account = (Account) authentication.getPrincipal();
             UUID accountId = account.getId(); // Pobieramy accountId z obiektu Account
 
-            // Przekazywanie accountId do serwisu logout
             service.logout(accountId);
 
             SecurityContextHolder.clearContext();

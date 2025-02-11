@@ -1,6 +1,5 @@
 package pl.lodz.pl.it.mopa.dto.product;
 
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;

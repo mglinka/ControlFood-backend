@@ -1,7 +1,5 @@
 package pl.lodz.pl.it.utils;
 
-import org.springframework.stereotype.Component;
-
 import java.security.SecureRandom;
 
 

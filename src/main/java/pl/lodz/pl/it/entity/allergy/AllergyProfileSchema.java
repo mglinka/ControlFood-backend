@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "allergy_profile_schema") // Optional: Specifies the table name in the database
+@Table(name = "allergy_profile_schema")
 public class AllergyProfileSchema {
 
     @Id
@@ -25,7 +25,7 @@ public class AllergyProfileSchema {
     @Column(nullable = false)
     private Long version;
 
-    @Column(nullable = false) // Optional: Ensures the name cannot be null
+    @Column(nullable = false)
     private String name;
 
     @ManyToMany(fetch = FetchType.EAGER) // Assuming an AllergyProfileSchema can have multiple allergens and vice versa

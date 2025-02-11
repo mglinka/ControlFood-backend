@@ -40,24 +40,6 @@ public class Account implements UserDetails {
     @JoinColumn(name = "allergy_profile_id")
     private AllergyProfile allergyProfile;
 
-//    @Column(nullable = false)
-//    @NotNull
-//    private Boolean verified;
-//
-//    @Column(nullable = false)
-//    @NotNull
-//    private Boolean nonLocked;
-//
-//    @PastOrPresent
-//    private LocalDateTime lastSuccessfulLogin;
-//
-//    @FutureOrPresent
-//    private LocalDateTime lockedUntil;
-//
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    private LanguageEnum language;
-
     @Override
     public String toString() {
         return "Account{" +
@@ -73,21 +55,6 @@ public class Account implements UserDetails {
     @Override
     public boolean isAccountNonExpired() {
         return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
     }
 
 

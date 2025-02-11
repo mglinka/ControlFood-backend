@@ -1,18 +1,29 @@
-package pl.lodz.pl.it;
+package pl.lodz.pl.it.integration;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import pl.lodz.pl.it.config.AbstractIntegrationTest;
+import pl.lodz.pl.it.auth.service.TokenVerifier;
+import pl.lodz.pl.it.integration.config.AbstractIntegrationTest;
 import pl.lodz.pl.it.dto.account.CreateAccountDTO;
 import pl.lodz.pl.it.entity.Account;
 import pl.lodz.pl.it.entity.Role;
@@ -30,6 +41,9 @@ public class MokIntegrationTests extends AbstractIntegrationTest {
   private final String email = "john.doe@example.com";
   private final String password = "P@ssword123";
   private final AccountRoleEnum userRole = AccountRoleEnum.ROLE_USER;
+
+  @MockBean
+  private TokenVerifier tokenVerifier;
 
   @BeforeEach
   public void setup() {
@@ -255,18 +269,88 @@ public class MokIntegrationTests extends AbstractIntegrationTest {
 
   }
 
-//  @Test
-//  public void testGoogleLogin() {
-//    String idToken = "eyJjbGciOiJSUzI1NiIsImtpZCI6ImZhMDcyZjc1Nzg0NjQyNjE1MDg3YzcxODJjMTAxMzQxZTE4ZjdhM2EiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5MDU5NjQ5NzI4MzktZHJmcHBkdW9yMDhxbzNobGxxZjJ1YXRqODFuYmZ2bWIuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI5MDU5NjQ5NzI4MzktZHJmcHBkdW9yMDhxbzNobGxxZjJ1YXRqODFuYmZ2bWIuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTU0MDc5OTg2MjQ4NjA2MDI2NTUiLCJlbWFpbCI6ImJhc2lhMTM1NDJAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJ1R2pNcHBqcnhEU0dYQXZqYU5CSnBnIiwibmFtZSI6IkJhc2lhIEJhc2lhIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0pmWjJPUllQSXBpQXNRRkVLYnA1dDlyVHVuWU9IRElsMlNnSUhSV0REQk81aWV3QT1zOTYtYyIsImdpdmVuX25hbWUiOiJCYXNpYSIsImZhbWlseV9uYW1lIjoiQmFzaWEiLCJpYXQiOjE3MzgzMjM4NDksImV4cCI6MTczODMyNzQ0OX0.BmTWyknDdGPUWnfaRYQJhGkpNA4c3MbquiMSu_XUQbf-PRk7s5oYJCZPExkmpgimQfKdsuQn72jPrpqC1JPkVcqgD08eEkcXolVavwZ_mfodIN2mkqr0YXUmoAMhJSJhRQbj3Jvu04YklYhibVj52aKPGBKIqOdC2RjoxHpIyuX-KiSs0VUWjhCYjNCF-SSSzUjMPGY7e27TIgI2Idnm5mBty_drrIHI_Tm6wBw822Ki6ohJGQAxyz0dYVvsDGwAkYCYDfokW69E55hURDL25C93AQ-eVwb9REQRDbaCPPH1Us8qRbaD3Df5iObE5m5nyrDEw9L9ZhNnAk7oGbraFw";  // Use your actual id_token here
-//
-//    given()
-//        .contentType(ContentType.JSON)
-//        .body(idToken)
-//        .when()
-//        .post("api/v1/auth/google/redirect")
-//        .then()
-//        .statusCode(400);
-//  }
+  @Test
+  public void testGoogleLogin() throws GeneralSecurityException, IOException {
+    // Mock the behavior of the tokenVerifier
+    GoogleIdToken mockToken = mock(GoogleIdToken.class);
+    when(tokenVerifier.verifyGoogle(anyString())).thenReturn(mockToken);
+    Payload payload = new Payload();
+    payload.setEmail("user@gmail.com");
+    payload.set("given_name", "Test");
+    payload.set("family_name", "Test");
+
+    when(mockToken.getPayload()).thenReturn(payload);
+
+    String token = "tokenik";
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(token)
+        .when()
+        .post("api/v1/auth/google/redirect")
+        .then()
+        .statusCode(200);
+  }
+  @Test
+  public void testGoogleLoginNewAccount() throws GeneralSecurityException, IOException {
+    // Mock the behavior of the tokenVerifier
+    GoogleIdToken mockToken = mock(GoogleIdToken.class);
+    when(tokenVerifier.verifyGoogle(anyString())).thenReturn(mockToken);
+    Payload payload = new Payload();
+    payload.setEmail("new_account@gmail.com");
+    payload.set("given_name", "Test");
+    payload.set("family_name", "Test");
+
+    when(mockToken.getPayload()).thenReturn(payload);
+
+    String token = "tokenik";
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(token)
+        .when()
+        .post("api/v1/auth/google/redirect")
+        .then()
+        .statusCode(200);
+  }
+  @Test
+  public void testAmazonLogin() throws GeneralSecurityException, IOException {
+    // Mock the behavior of the tokenVerifier
+    Map<String, Object> data = new HashMap<>();
+    data.put("name", "Test");
+    data.put("email", "user@gmail.com");
+
+    when(tokenVerifier.verifyAmazon(anyString())).thenReturn(data);
+
+    String token = "tokenik";
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(token)
+        .when()
+        .post("api/v1/auth/amazon/redirect")
+        .then()
+        .statusCode(200);
+  }
+  @Test
+  public void testAmazonLoginNewAccount() throws GeneralSecurityException, IOException {
+    // Mock the behavior of the tokenVerifier
+    Map<String, Object> data = new HashMap<>();
+    data.put("name", "Test");
+    data.put("email", "new_account_2@gmail.com");
+
+    when(tokenVerifier.verifyAmazon(anyString())).thenReturn(data);
+
+    String token = "tokenik";
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(token)
+        .when()
+        .post("api/v1/auth/amazon/redirect")
+        .then()
+        .statusCode(200);
+  }
 
   @Test
   public void testRegisterValidRequest() {
@@ -363,6 +447,8 @@ public class MokIntegrationTests extends AbstractIntegrationTest {
         .then()
         .statusCode(HttpStatus.BAD_REQUEST.value());
   }
+
+
 
 }
 

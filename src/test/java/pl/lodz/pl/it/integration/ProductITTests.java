@@ -1,4 +1,4 @@
-package pl.lodz.pl.it;
+package pl.lodz.pl.it.integration;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;

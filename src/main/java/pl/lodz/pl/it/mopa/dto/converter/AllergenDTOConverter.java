@@ -34,7 +34,4 @@ public class AllergenDTOConverter {
         return allergens.stream().map(this::toAllergenDTO).toList();
     }
 
-    public List<GetAllergenIntensityDTO> allergenIntensityDTOS(List<Allergen>allergens){
-        return allergens.stream().map(this::toAllergenIntensityDTO).toList();
-    }
 }

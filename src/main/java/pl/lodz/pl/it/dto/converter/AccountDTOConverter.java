@@ -1,10 +1,7 @@
 package pl.lodz.pl.it.dto.converter;
 
-import pl.lodz.pl.it.dto.account.AccountDTO;
-import pl.lodz.pl.it.dto.account.CreateAccountDTO;
 import pl.lodz.pl.it.dto.account.GetAccountDTO;
 import pl.lodz.pl.it.dto.account.RoleDTO;
-import pl.lodz.pl.it.dto.update.UpdateAccountDataDTO;
 import pl.lodz.pl.it.entity.Account;
 import pl.lodz.pl.it.entity.Role;
 import lombok.RequiredArgsConstructor;
@@ -29,21 +26,6 @@ public class AccountDTOConverter {
         return roles.stream().map(this::toRoleDTO).toList();
     }
 
-    public Account toAccount (CreateAccountDTO createAccountDTO){
-        return modelMapper.map(createAccountDTO, Account.class);
-    }
-
-
-    public Account toAccount(UpdateAccountDataDTO updateAccountDataDTO) {
-        return modelMapper.map(updateAccountDataDTO, Account.class);
-
-
-    }
-
-    public AccountDTO toAccountPersonalDTO (Account account){
-        return modelMapper.map(account, AccountDTO.class);
-    }
-
     public GetAccountDTO toAccountDto(Account account) {
         if (account.getRole() == null || account.getEnabled() == null) {
             return null;
@@ -58,9 +40,6 @@ public class AccountDTOConverter {
     }
 
 
-    public List<GetAccountDTO> accountDtoList(List<Account> accounts) {
-        return accounts.stream().map(this::toAccountDto).toList();
-    }
 
 
 }

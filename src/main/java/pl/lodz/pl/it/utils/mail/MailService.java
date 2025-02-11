@@ -3,7 +3,6 @@ package pl.lodz.pl.it.utils.mail;
 import pl.lodz.pl.it.entity.Account;
 import pl.lodz.pl.it.utils._enum.AccountRoleEnum;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

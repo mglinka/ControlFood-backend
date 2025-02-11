@@ -39,14 +39,8 @@ public class MeController {
             System.out.println("etag"+ eTag);
             meService.updateInfo(updateAccountDataDTO, eTag);
             return ResponseEntity.ok("Dane zostały zaktualizowane");
-        } catch (OptimisticLockException e) {
+        } catch ( OptimisticLockException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Dane zostały zmienione przez innego użytkownika");
         }
-//        catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Wystąpił nieoczekiwany błąd - ll");
-//        }
     }
-
-
-
 }

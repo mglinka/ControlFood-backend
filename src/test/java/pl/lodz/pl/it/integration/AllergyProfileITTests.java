@@ -1,4 +1,4 @@
-package pl.lodz.pl.it;
+package pl.lodz.pl.it.integration;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThan;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import pl.lodz.pl.it.config.AbstractIntegrationTest;
+import pl.lodz.pl.it.integration.config.AbstractIntegrationTest;
 
 public class AllergyProfileITTests extends AbstractIntegrationTest {
 

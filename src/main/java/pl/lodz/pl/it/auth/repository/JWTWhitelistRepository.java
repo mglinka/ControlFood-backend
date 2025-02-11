@@ -6,7 +6,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,11 +16,6 @@ public interface JWTWhitelistRepository extends JpaRepository<JWTWhitelistToken,
     @PreAuthorize("permitAll()")
     Boolean existsByToken(String token);
 
-    @PreAuthorize("hasRole('ROLE_SYSTEM')")
-    void deleteAllByExpirationDateBefore(LocalDateTime expirationDate);
-
-    void deleteByToken(String token);
-
     @PreAuthorize("permitAll()")
     void deleteAllByAccount_Id(UUID accountId);
 
@@ -29,6 +23,5 @@ public interface JWTWhitelistRepository extends JpaRepository<JWTWhitelistToken,
     JWTWhitelistToken saveAndFlush(JWTWhitelistToken jwtWhitelistToken);
 
     Optional<JWTWhitelistToken> findByToken(String token);
-    Optional<JWTWhitelistToken> findByAccount_Id(UUID accountId);
 
 }
